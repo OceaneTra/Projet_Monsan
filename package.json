@@ -23,8 +23,9 @@
     "update-browserslist-db": "^1.1.3"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-    
+    "tailwind:dev": "tailwindcss -i ./src/input.css -o ./public/css/output.css --watch",
+    "start": "...",
+    "dev": "concurrently \"npm run tailwind:dev\" \"php -S localhost:8080 -t public\""
   },
   "keywords": [],
   "author": "",

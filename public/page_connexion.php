@@ -220,7 +220,7 @@
                     <form class="space-y-6" method="POST" action="login.php">
                         <!-- Email Input -->
                         <div class="input-group">
-                            <input type="email" id="email" placeholder=" "
+                            <input type="email" id="email" name="email" placeholder=" "
                                 class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:border-yellow-400 focus:outline-none transition-all duration-200 bg-white/50"
                                 required>
                             <label for="email">Adresse email</label>
@@ -228,7 +228,7 @@
 
                         <!-- Password Input -->
                         <div class="input-group">
-                            <input type="password" id="password" placeholder=" "
+                            <input type="password" id="password" name="password" placeholder=" "
                                 class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:border-yellow-400 focus:outline-none transition-all duration-200 bg-white/50"
                                 required>
                             <label for="password">Mot de passe</label>
@@ -293,7 +293,7 @@
     const submitBtn = form.querySelector('button[type="submit"]');
 
     form.addEventListener('submit', function(e) {
-        e.preventDefault();
+      //  e.preventDefault();
 
         // Loading state
         submitBtn.innerHTML = `
@@ -307,7 +307,7 @@
         setTimeout(() => {
             submitBtn.innerHTML = 'Se Connecter';
             // Here you would typically handle the actual login
-            alert('Connexion simulée réussie !');
+           // alert('Connexion simulée réussie !');
         }, 2000);
     });
 
