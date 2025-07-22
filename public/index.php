@@ -59,7 +59,7 @@
     <nav class="bg-white shadow-sm px-6 py-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-8">
-                <div class="text-2xl font-bold">EduX</div>
+                <img src="./images/logo.png" alt="logo" width="130" height="70" title="logo" style="" >
                 <div class="hidden md:flex space-x-6">
                     <a href="#" class="text-gray-600 hover:text-black transition">Categories</a>
                     <a href="#" class="text-gray-600 hover:text-black transition">Instructors</a>
