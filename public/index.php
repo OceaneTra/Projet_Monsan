@@ -67,8 +67,7 @@
                 </div>
             </div>
             <div class="flex items-center space-x-4">
-                <button class="text-gray-600 hover:text-black transition">Sign In</button>
-                <button class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Sign Up</button>
+                <a href="page_connexion.php" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Sign In</a>
             </div>
         </div>
     </nav>
