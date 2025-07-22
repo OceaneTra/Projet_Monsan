@@ -527,11 +527,6 @@ if (!isset($_SESSION['id_utilisateur'])) {
 }
 
 
-
-
-
-
-
 ?>
 
 <!DOCTYPE html>
@@ -580,22 +575,12 @@ if (!isset($_SESSION['id_utilisateur'])) {
 <body class="bg-gray-50 font-sans antialiased">
     <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-white overflow-hidden">
         <!-- Sidebar -->
-        <div x-show="sidebarOpen" @click.away="sidebarOpen = false" class="fixed inset-0 z-40 flex md:hidden"
-            x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300"
-            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-            <div class="fixed inset-0 bg-gray-600 bg-opacity-75"></div>
-            <div class="relative flex-1 flex flex-col max-w-xs w-full bg-white">
-                <div class="absolute top-0 right-0 -mr-12 pt-2">
-                    <button @click="sidebarOpen = false"
-                        class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                        <span class="sr-only">Close sidebar</span>
-                        <i class="fas fa-times text-white"></i>
-                    </button>
-                </div>
-                <!-- Sidebar content for mobile -->
-                <div class="flex items-center justify-center h-20 px-4 bg-white border-b">
-                    <img src="./images/logo.png" height="130px" width="130px" alt="Logo">
+        <div class="hidden md:flex md:flex-shrink-0 ">
+            <div class="flex flex-col w-64 border-r border-gray-200 bg-white">
+                <div class="flex items-center justify-center h-20 px-4 bg-green-100 shadow-sm">
+                    <div class="flex overflow-hidden items-center ">
+                        <img src="./images/logo.png" height="130px" width="130px" alt="">
+                    </div>
                 </div>
                 <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
                     <nav class="mt-5 px-2 space-y-2">
@@ -640,24 +625,34 @@ if (!isset($_SESSION['id_utilisateur'])) {
         <!-- Main content -->
         <div class="flex flex-col flex-1 w-0 overflow-hidden">
             <!-- Top navigation -->
-            <div class="relative z-10 flex-shrink-0 flex h-20 bg-white shadow-sm">
-                <button @click.stop="sidebarOpen = true"
-                    class="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-yellow-500 md:hidden">
-                    <span class="sr-only">Open sidebar</span>
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="flex-1 px-4 flex justify-between items-center">
-                    <div class="flex-1 flex">
-                        <h1 class="text-xl font-bold text-gray-800"><?php echo htmlspecialchars($currentPageLabel); ?>
-                        </h1>
+            <div class="flex items-center justify-between h-20 px-4 border-b border-gray-200 bg-green-100 shadow-sm">
+                <div class="flex items-center">
+                    <button id="mobileMenuButton" class="md:hidden text-gray-500 focus:outline-none mr-3">
+                        <i class="fas fa-bars"></i>
+                    </button>
+
+                    <img src="./images/logo_mathInfo_fond_blanc.png" alt="Logo" class="h-16 w-18 mr-4">
+                    <?php
+                    $date = new DateTime();
+                    $jours = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+                    $mois = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+                    $date_fr = $jours[$date->format('w')] . ' ' . $date->format('d') . ' ' . $mois[$date->format('n') - 1] . ' ' . $date->format('Y');
+                    $heure = $date->format('H:i');
+                    ?>
+                    <div class="flex items-center ">
+                        <h2 class="text-lg font-bold "><?php echo $date_fr; ?></h2>
+                        <p class="text-sm opacity-90"><?php echo $heure; ?></p>
                     </div>
-                    <div class="ml-4 flex items-center md:ml-6">
-                        <div class="relative">
-                            <div class="text-right">
-                                <p class="text-md font-medium text-gray-800">Bienvenue,
-                                    <?php echo htmlspecialchars($_SESSION['nom_utilisateur']) ?></p>
-                                <p class="text-xs text-gray-500"><?php echo htmlspecialchars($_SESSION['lib_GU']) ?></p>
-                            </div>
+
+
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="relative flex flex-col ">
+                            <span class="text-md font-medium text-green-500">Bienvenue,
+                                <?php echo htmlspecialchars($_SESSION['nom_utilisateur']) ?></span>
+                            <span class="text-xs text-green-500 justify-start">
+                                <?php echo htmlspecialchars($_SESSION['lib_GU']) ?></span>
                         </div>
                     </div>
                 </div>
