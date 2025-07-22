@@ -527,11 +527,6 @@ if (!isset($_SESSION['id_utilisateur'])) {
 }
 
 
-
-
-
-
-
 ?>
 
 <!DOCTYPE html>
@@ -563,7 +558,6 @@ if (!isset($_SESSION['id_utilisateur'])) {
             <div class="flex flex-col w-64 border-r border-gray-200 bg-white">
                 <div class="flex items-center justify-center h-20 px-4 bg-green-100 shadow-sm">
                     <div class="flex overflow-hidden items-center ">
-
                         <img src="./images/logo.png" height="130px" width="130px" alt="">
                     </div>
                 </div>
@@ -595,14 +589,23 @@ if (!isset($_SESSION['id_utilisateur'])) {
                     <button id="mobileMenuButton" class="md:hidden text-gray-500 focus:outline-none mr-3">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <a href="">
-                        <img src="./images/logo_mathInfo_fond_blanc.png" alt="Logo" class="h-16 w-16 mr-4">
-                    </a>
-                    <h1 class="text-lg font-medium text-green-500"><?php echo htmlspecialchars($currentPageLabel); ?>
-                    </h1>
+
+                    <img src="./images/logo_mathInfo_fond_blanc.png" alt="Logo" class="h-16 w-18 mr-4">
+                    <?php
+                    $date = new DateTime();
+                    $jours = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+                    $mois = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+                    $date_fr = $jours[$date->format('w')] . ' ' . $date->format('d') . ' ' . $mois[$date->format('n') - 1] . ' ' . $date->format('Y');
+                    $heure = $date->format('H:i');
+                    ?>
+                    <div class="flex items-center ">
+                        <h2 class="text-lg font-bold "><?php echo $date_fr; ?></h2>
+                        <p class="text-sm opacity-90"><?php echo $heure; ?></p>
+                    </div>
+
+
                 </div>
                 <div class="flex items-center space-x-6">
-
                     <div class="flex items-center space-x-4">
                         <div class="relative flex flex-col ">
                             <span class="text-md font-medium text-green-500">Bienvenue,
