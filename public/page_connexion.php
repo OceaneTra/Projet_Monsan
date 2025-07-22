@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Se Connecter - EduX</title>
+    <title>Connexion</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
     tailwind.config = {
@@ -209,11 +209,11 @@
                 <div class="form-container rounded-3xl p-8 lg:p-12 shadow-2xl max-w-md mx-auto">
                     <!-- Header -->
                     <div class="text-center mb-8">
-                        <div class="w-16 h-16 bg-yellow-400 rounded-full mx-auto mb-4 flex items-center justify-center">
-                            <div class="w-8 h-8 bg-black rounded-full"></div>
+                        <div class=" mx-auto mb-4 flex items-center justify-center">
+                            <img src="./images/logo.png" alt="logo UniValid" class="w-20">
                         </div>
-                        <h1 class="text-3xl font-bold mb-2">Bon Retour !</h1>
-                        <p class="text-gray-600">Connectez-vous pour continuer votre apprentissage</p>
+                        <h1 class="text-3xl font-bold mb-2">Connexion</h1>
+                        <p class="text-gray-600">Connectez-vous pour continuer à suivre vos évaluations </p>
                     </div>
 
                     <!-- Login Form -->
@@ -237,7 +237,7 @@
                         <!-- Remember & comeback -->
                         <div class="flex justify-between items-center text-sm">
                             <label class="flex items-center space-x-2 cursor-pointer">
-                                <span class="text-gray-600">Aller à l'accueil</span>
+                                <a href="index.php"><span class="text-gray-600">Aller à l'accueil</span></a>
                             </label>
                             <a href="forgot_password.php" class="text-yellow-600 hover:text-yellow-700 font-medium">
                                 Mot de passe oublié ?
@@ -293,7 +293,7 @@
     const submitBtn = form.querySelector('button[type="submit"]');
 
     form.addEventListener('submit', function(e) {
-      //  e.preventDefault();
+        //  e.preventDefault();
 
         // Loading state
         submitBtn.innerHTML = `
@@ -307,7 +307,7 @@
         setTimeout(() => {
             submitBtn.innerHTML = 'Se Connecter';
             // Here you would typically handle the actual login
-           // alert('Connexion simulée réussie !');
+            // alert('Connexion simulée réussie !');
         }, 2000);
     });
 

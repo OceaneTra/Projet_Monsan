@@ -59,15 +59,18 @@
     <nav class="bg-white shadow-sm px-6 py-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-8">
-                <div class="text-2xl font-bold">EduX</div>
+                <div class="text-2xl font-bold">
+                    <img src="./images/logo.png" alt="logo UniValid" class="w-20">
+                </div>
                 <div class="hidden md:flex space-x-6">
                     <a href="#" class="text-gray-600 hover:text-black transition">Categories</a>
                     <a href="#" class="text-gray-600 hover:text-black transition">Instructors</a>
-                    <a href="#" class="text-gray-600 hover:text-black transition">Contact Us</a>
+                    <a href="#" class="text-gray-600 hover:text-black transition">Contactez-nous</a>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
-                <a href="page_connexion.php" class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Sign In</a>
+                <a href="page_connexion.php"
+                    class="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition">Se connecter</a>
             </div>
         </div>
     </nav>
@@ -96,8 +99,8 @@
 
                 <button
                     class="bg-black text-white px-8 py-4 rounded-full hover:bg-gray-800 transition-all duration-300 hover:scale-105">
-                    <a href="login.php">
-                        Get Started
+                    <a href="page_connexion.php">
+                        Commencer
                     </a>
                 </button>
             </div>
