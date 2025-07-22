@@ -239,7 +239,7 @@
                             <label class="flex items-center space-x-2 cursor-pointer">
                                 <span class="text-gray-600">Aller à l'accueil</span>
                             </label>
-                            <a href="#" class="text-yellow-600 hover:text-yellow-700 font-medium">
+                            <a href="forgot_password.php" class="text-yellow-600 hover:text-yellow-700 font-medium">
                                 Mot de passe oublié ?
                             </a>
                         </div>
