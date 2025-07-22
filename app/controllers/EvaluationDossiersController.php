@@ -12,7 +12,11 @@ class EvaluationDossiersController {
     private $db;
     private $rapportEtudiant;
     private $evaluationRapport;
-    public function __construct($pdo) {
+
+    
+
+    
+    public function __construct() {
         $this->auditLog = new AuditLog($this->db);
         $this->db = Database::getConnection();
         $this->rapportEtudiant = new RapportEtudiant($this->db);
