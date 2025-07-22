@@ -15,22 +15,29 @@ $repartitionData = $dashboardData['repartition_statuts'] ?? [];
 $performanceData = $dashboardData['performance_categories'] ?? [];
 $activitesData = $dashboardData['activites_recentes'] ?? [];
 $rapportsDetails = $dashboardData['rapports_details'] ?? [];
+$rapportsEnAttente = $dashboardData['rapports_en_attente'] ?? [];
 
 // Fonctions utilitaires
-function getTimeAgo($date) {
+function getTimeAgo($date)
+{
     if (!$date) return 'N/A';
     $time = time() - strtotime($date);
-    if ($time < 3600) return floor($time/60) . 'min';
-    if ($time < 86400) return floor($time/3600) . 'h';
-    return floor($time/86400) . 'j';
+    if ($time < 3600) return floor($time / 60) . 'min';
+    if ($time < 86400) return floor($time / 3600) . 'h';
+    return floor($time / 86400) . 'j';
 }
 
-function getStatusClass($status) {
+function getStatusClass($status)
+{
     switch ($status) {
-        case 'valide': return 'bg-green-100 text-green-800';
-        case 'rejete': return 'bg-red-100 text-red-800';
-        case 'en_cours': return 'bg-orange-100 text-orange-800';
-        default: return 'bg-gray-100 text-gray-800';
+        case 'valide':
+            return 'bg-green-100 text-green-800';
+        case 'rejete':
+            return 'bg-red-100 text-red-800';
+        case 'en_cours':
+            return 'bg-orange-100 text-orange-800';
+        default:
+            return 'bg-gray-100 text-gray-800';
     }
 }
 
@@ -47,7 +54,7 @@ foreach ($evolutionData as $data) {
 
 $statusLabels = [];
 $statusData = [];
-$statusColors = ['#ef4444','#10b981', '#f59e0b', '#6b7280'];
+$statusColors = ['#ef4444', '#10b981', '#f59e0b', '#6b7280'];
 
 foreach ($repartitionData as $data) {
     $statusLabels[] = ucfirst($data['statut']);
@@ -64,65 +71,65 @@ foreach ($repartitionData as $data) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
-    .sidebar-hover:hover {
-        background-color: #fef3c7;
-        border-left: 4px solid #f59e0b;
-    }
-
-    .fade-in {
-        animation: fadeIn 0.3s ease-in;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
+        .sidebar-hover:hover {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
         }
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
         }
-    }
 
-    .stat-card {
-        transition: all 0.3s ease;
-    }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
 
-    .stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    .chart-container {
-        position: relative;
-        height: 300px;
-    }
+        .stat-card {
+            transition: all 0.3s ease;
+        }
 
-    .progress-ring {
-        transition: stroke-dasharray 0.6s ease-in-out;
-    }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
 
-    .metric-value {
-        font-size: 2.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
 
-    .trend-up {
-        color: #10b981;
-    }
+        .progress-ring {
+            transition: stroke-dasharray 0.6s ease-in-out;
+        }
 
-    .trend-down {
-        color: #ef4444;
-    }
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-    .trend-stable {
-        color: #6b7280;
-    }
+        .trend-up {
+            color: #10b981;
+        }
+
+        .trend-down {
+            color: #ef4444;
+        }
+
+        .trend-stable {
+            color: #6b7280;
+        }
     </style>
 </head>
 
@@ -132,243 +139,184 @@ foreach ($repartitionData as $data) {
         <!-- Main content area -->
         <div class="flex-1 overflow-y-auto bg-gray-50">
             <div class="max-w-7xl mx-auto p-6">
-                <!-- KPI Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="stat-card bg-white rounded-lg shadow p-6 fade-in">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-gray-600">Total Comptes Rendus</p>
-                                <p class="metric-value"><?php echo $totalRapports; ?></p>
-                                <div class="flex items-center mt-2">
-                                    <i class="fas fa-arrow-up text-sm trend-up mr-1"></i>
-                                    <span class="text-sm text-green-600">+12% ce mois</span>
-                                </div>
-                            </div>
-                            <div class="p-3 rounded-full bg-blue-100">
-                                <i class="fas fa-file-alt text-blue-600 text-2xl"></i>
-                            </div>
+                <!-- HEADER HERO -->
+                <div class="relative bg-gradient-to-r from-green-400 via-green-200 to-blue-200 py-12 mb-10 rounded-b-3xl shadow-lg">
+                    <div class="container mx-auto flex flex-col items-center justify-center">
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="inline-flex items-center justify-center bg-white/80 rounded-full p-4 shadow-lg">
+                                <i class="fas fa-users text-green-600 text-4xl"></i>
+                            </span>
+                            <h1 class="text-4xl md:text-5xl font-extrabold text-green-800 tracking-wide drop-shadow-lg">Dashboard Commission</h1>
                         </div>
-                    </div>
-
-                    <div class="stat-card bg-white rounded-lg shadow p-6 fade-in">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-gray-600">Taux de Validation</p>
-                                <p class="metric-value"><?php echo $tauxValidation; ?>%</p>
-                                <div class="flex items-center mt-2">
-                                    <i class="fas fa-arrow-up text-sm trend-up mr-1"></i>
-                                    <span class="text-sm text-green-600">+3% ce mois</span>
-                                </div>
-                            </div>
-                            <div class="p-3 rounded-full bg-green-100">
-                                <i class="fas fa-check-circle text-green-600 text-2xl"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card bg-white rounded-lg shadow p-6 fade-in">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-gray-600">Temps Moyen</p>
-                                <p class="metric-value"><?php echo $tempsMoyen; ?>j</p>
-                                <div class="flex items-center mt-2">
-                                    <i class="fas fa-arrow-down text-sm trend-up mr-1"></i>
-                                    <span class="text-sm text-green-600">-8% ce mois</span>
-                                </div>
-                            </div>
-                            <div class="p-3 rounded-full bg-purple-100">
-                                <i class="fas fa-clock text-purple-600 text-2xl"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card bg-white rounded-lg shadow p-6 fade-in">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-gray-600">En Attente</p>
-                                <p class="metric-value"><?php echo $enAttente; ?></p>
-                                <div class="flex items-center mt-2">
-                                    <i class="fas fa-minus text-sm trend-stable mr-1"></i>
-                                    <span class="text-sm text-gray-600">Stable</span>
-                                </div>
-                            </div>
-                            <div class="p-3 rounded-full bg-orange-100">
-                                <i class="fas fa-hourglass-half text-orange-600 text-2xl"></i>
-                            </div>
-                        </div>
+                        <p class="text-lg text-green-900/80 font-medium">Vue d'ensemble et suivi des rapports de soutenance</p>
                     </div>
                 </div>
 
-                <!-- Charts Row -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <!-- Evolution Chart -->
-                    <div class="bg-white rounded-lg shadow p-6 fade-in">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-800">
-                                <i class="fas fa-chart-line text-blue-600 mr-2"></i>
-                                Évolution des Comptes Rendus
-                            </h3>
-                            <div class="flex items-center space-x-2 text-sm">
-                                <div class="flex items-center">
-                                    <div class="w-3 h-3 bg-blue-600 rounded-full mr-1"></div>
-                                    <span>Finalisés</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <div class="w-3 h-3 bg-yellow-600 rounded-full mr-1"></div>
-                                    <span>Rejetés</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="evolutionChart"></canvas>
-                        </div>
+                <!-- STAT CARDS -->
+                <div class="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 -mt-16 mb-12 px-2">
+                    <div class="bg-gradient-to-br from-blue-100 to-blue-300 rounded-2xl shadow-xl p-8 flex flex-col items-center hover:scale-105 transition-transform">
+                        <i class="fas fa-file-alt text-4xl text-blue-600 mb-2"></i>
+                        <div class="text-3xl font-bold text-blue-800"><?php echo $totalRapports; ?></div>
+                        <div class="text-blue-700 mt-1">Rapports total</div>
                     </div>
-
-                    <!-- Status Distribution -->
-                    <div class="bg-white rounded-lg shadow p-6 fade-in">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-800">
-                                <i class="fas fa-chart-pie text-green-600 mr-2"></i>
-                                Répartition par Statut
-                            </h3>
-                            <button onclick="refreshCharts()" class="text-gray-400 hover:text-gray-600">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="statusChart"></canvas>
-                        </div>
+                    <div class="bg-gradient-to-br from-green-100 to-green-300 rounded-2xl shadow-xl p-8 flex flex-col items-center hover:scale-105 transition-transform">
+                        <i class="fas fa-check-circle text-4xl text-green-600 mb-2"></i>
+                        <div class="text-3xl font-bold text-green-800"><?php echo $tauxValidation; ?>%</div>
+                        <div class="text-green-700 mt-1">Taux de validation</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-yellow-100 to-yellow-300 rounded-2xl shadow-xl p-8 flex flex-col items-center hover:scale-105 transition-transform">
+                        <i class="fas fa-clock text-4xl text-yellow-600 mb-2"></i>
+                        <div class="text-3xl font-bold text-yellow-800"><?php echo $tempsMoyen; ?> j</div>
+                        <div class="text-yellow-700 mt-1">Temps moyen</div>
+                    </div>
+                    <div class="bg-gradient-to-br from-red-100 to-red-300 rounded-2xl shadow-xl p-8 flex flex-col items-center hover:scale-105 transition-transform">
+                        <i class="fas fa-hourglass-half text-4xl text-red-600 mb-2"></i>
+                        <div class="text-3xl font-bold text-red-800"><?php echo $enAttente; ?></div>
+                        <div class="text-red-700 mt-1">En attente</div>
                     </div>
                 </div>
 
-                <!-- Detailed Stats -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                    <!-- Performance by Category -->
-                    <div class="bg-white rounded-lg shadow p-6 fade-in">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                            <i class="fas fa-tags text-purple-600 mr-2"></i>
-                            Performance par Catégorie
-                        </h3>
-                        <div class="space-y-4">
-                            <?php if (!empty($performanceData)): ?>
-                                <?php foreach ($performanceData as $category): ?>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
-                                        <div class="w-3 h-3 bg-blue-600 rounded-full mr-3"></div>
-                                        <span class="text-sm font-medium"><?php echo ucfirst($category['categorie']); ?></span>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <div class="w-20 bg-gray-200 rounded-full h-2">
-                                            <div class="bg-blue-600 h-2 rounded-full" style="width: <?php echo $category['taux']; ?>%"></div>
-                                        </div>
-                                        <span class="text-sm font-semibold"><?php echo $category['taux']; ?>%</span>
-                                    </div>
-                                </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="text-center text-gray-500 py-4">
-                                    <i class="fas fa-chart-bar text-2xl mb-2"></i>
-                                    <p>Aucune donnée disponible</p>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
 
-                    <!-- Recent Activity -->
-                    <div class="bg-white rounded-lg shadow p-6 fade-in">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                            <i class="fas fa-history text-indigo-600 mr-2"></i>
-                            Activité Récente
-                        </h3>
-                        <div class="space-y-3">
-                            <?php if (!empty($activitesData)): ?>
-                                <?php foreach ($activitesData as $activite): ?>
-                                <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg">
-                                    <div class="p-2 <?php echo $activite['statut'] === 'valider' ? 'bg-green-100' : 'bg-red-100'; ?> rounded-full">
-                                        <i class="fas fa-<?php echo $activite['statut'] === 'valider' ? 'check' : 'times'; ?> text-<?php echo $activite['statut'] === 'valider' ? 'green' : 'red'; ?>-600 text-xs"></i>
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium">Rapport <?php echo ucfirst($activite['statut']); ?></p>
-                                        <p class="text-xs text-gray-500">
-                                            <?php echo $activite['titre']; ?> - <?php echo $activite['prenom_etudiant'] . ' ' . $activite['nom_etudiant']; ?>
-                                        </p>
-                                        <p class="text-xs text-gray-400">
-                                            Par <?php echo $activite['prenom_enseignant'] . ' ' . $activite['nom_enseignant']; ?>
-                                        </p>
-                                    </div>
-                                    <span class="text-xs text-gray-400"><?php echo getTimeAgo($activite['date_validation']); ?></span>
-                                </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="text-center text-gray-500 py-4">
-                                    <i class="fas fa-history text-2xl mb-2"></i>
-                                    <p>Aucune activité récente</p>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
 
-                    <!-- Quick Actions -->
-                    <div class="bg-white rounded-lg shadow p-6 fade-in">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                            <i class="fas fa-bolt text-yellow-600 mr-2"></i>
-                            Actions Rapides
-                        </h3>
-                        <div class="space-y-3">
-                            <button onclick="generateReport()"
-                                class="w-full flex items-center justify-center px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-md hover:bg-yellow-700">
-                                <i class="fas fa-chart-bar mr-2"></i>
-                                Générer Rapport Mensuel
-                            </button>
-                            <button onclick="exportData()"
-                                class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
-                                <i class="fas fa-download mr-2"></i>
-                                Exporter Données
-                            </button>
-                            <button onclick="viewArchives()"
-                                class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
-                                <i class="fas fa-archive mr-2"></i>
-                                Consulter Archives
-                            </button>
-                            <button onclick="settings()"
-                                class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
-                                <i class="fas fa-cog mr-2"></i>
-                                Paramètres
-                            </button>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Performance Table -->
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Evolution Chart -->
                 <div class="bg-white rounded-lg shadow p-6 fade-in">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold text-gray-800">
-                            <i class="fas fa-table text-gray-600 mr-2"></i>
-                            Détails des Performances
+                            <i class="fas fa-chart-line text-blue-600 mr-2"></i>
+                            Évolution des Comptes Rendus
                         </h3>
-                        <div class="flex items-center space-x-2">
-                            <input type="text" placeholder="Rechercher..."
-                                class="px-3 py-1 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500">
-                            <button class="px-3 py-1 text-sm bg-yellow-600 text-white rounded-md hover:bg-yellow-700">
-                                <i class="fas fa-filter"></i>
-                            </button>
+                        <div class="flex items-center space-x-2 text-sm">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-blue-600 rounded-full mr-1"></div>
+                                <span>Finalisés</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-yellow-600 rounded-full mr-1"></div>
+                                <span>Rejetés</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étudiant</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enseignant</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Temps de traitement</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <?php if (!empty($rapportsDetails)): ?>
-                                    <?php foreach ($rapportsDetails as $rapport): ?>
+                    <div class="chart-container">
+                        <canvas id="evolutionChart"></canvas>
+                    </div>
+                </div>
+                <!-- Graphique répartition -->
+                <div class="bg-white rounded-xl shadow-lg p-6 fade-in">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
+                            <i class="fas fa-chart-bar text-green-600 mr-3"></i> Répartition par Statut
+                        </h3>
+                        <button onclick="refreshCharts()" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+                            <i class="fas fa-sync-alt text-lg"></i>
+                        </button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Stats -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-lg shadow p-6 fade-in">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-history text-indigo-600 mr-2"></i>
+                        Rapports en attente de validation
+                    </h3>
+                    <div class="space-y-3">
+                        <?php if (!empty($rapportsEnAttente)): ?>
+                            <?php foreach ($rapportsEnAttente as $rapport): ?>
+                                <div class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium">Rapport <?php echo ucfirst($rapport['statut_rapport']); ?></p>
+                                        <p class="text-xs text-gray-500">
+                                            <?php echo $rapport['titre']; ?> - <?php echo $rapport['prenom_etudiant'] . ' ' . $rapport['nom_etudiant']; ?>
+                                        </p>
+                                        <p class="text-xs text-gray-400">
+                                            Par <?php echo $rapport['prenom_enseignant'] . ' ' . $rapport['nom_enseignant']; ?>
+                                        </p>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="text-center text-gray-500 py-2">
+                                <i class="fas fa-history text-4xl mb-2"></i>
+                                <p>Aucun rapport en attente de validation</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow p-6 fade-in">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-bolt text-yellow-600 mr-2"></i>
+                        Actions Rapides
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4 p-8">
+                        <button onclick="generateReport()"
+                            class="w-full flex flex-col items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                            <i class="fas fa-chart-bar mr-2 mb-2 text-3xl"></i>
+                            Générer Rapport Mensuel
+                        </button>
+                        <button onclick="exportData()"
+                            class="w-full flex flex-col items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                            <i class="fas fa-download mr-2 mb-2 text-3xl"></i>
+                            Exporter Données
+                        </button>
+                        <button onclick="viewArchives()"
+                            class="w-full flex flex-col items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                            <i class="fas fa-archive mr-2 mb-2 text-3xl"></i>
+                            Consulter Archives
+                        </button>
+                        <button onclick="settings()"
+                            class="w-full flex flex-col items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                            <i class="fas fa-cog mr-2 mb-2 text-3xl"></i>
+                            Paramètres
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Performance Table -->
+            <div class="bg-white rounded-lg shadow p-6 fade-in">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">
+                        <i class="fas fa-table text-gray-600 mr-2"></i>
+                        Détails des Performances
+                    </h3>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" placeholder="Rechercher..."
+                            class="px-3 py-1 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500">
+                        <button class="px-3 py-1 text-sm bg-yellow-600 text-white rounded-md hover:bg-yellow-700">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étudiant</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enseignant</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Temps de traitement</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <?php if (!empty($rapportsDetails)): ?>
+                                <?php foreach ($rapportsDetails as $rapport): ?>
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-4 py-2 text-sm">
                                             <span class="px-2 py-1 text-xs rounded-full <?php echo $rapport['statut'] === 'valider' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
@@ -396,232 +344,312 @@ foreach ($repartitionData as $data) {
                                             </button>
                                         </td>
                                     </tr>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <tr>
-                                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                                            <i class="fas fa-table text-2xl mb-2"></i>
-                                            <p>Aucun rapport disponible</p>
-                                        </td>
-                                    </tr>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                        <i class="fas fa-table text-2xl mb-2"></i>
+                                        <p>Aucun rapport disponible</p>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+
+            <!-- FOOTER -->
+            <footer class="w-full py-6 bg-gradient-to-r from-green-200 to-blue-100 text-center text-gray-600 text-sm rounded-t-2xl mt-10 shadow-inner">
+                &copy; <?php echo date('Y'); ?> Univalid - Dashboard Commission
+            </footer>
         </div>
+    </div>
 
     </div>
 
     <script>
-    // Variables globales pour les graphiques
-    let evolutionChart, statusChart;
+        // Variables globales pour les graphiques
+        let evolutionChart, statusChart;
 
-    // Données pour les graphiques depuis PHP
-    const evolutionData = {
-        labels: <?php echo json_encode($evolutionLabels); ?>,
-        datasets: [{
-                label: 'Finalisés',
-                data: <?php echo json_encode($evolutionFinalises); ?>,
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                tension: 0.4,
-                fill: true
-            },
-            {
-                label: 'Rejetés',
-                data: <?php echo json_encode($evolutionRejetes); ?>,
-                borderColor: '#f59e0b',
-                backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                tension: 0.4,
-                fill: true
-            }
-        ]
-    };
-
-    const statusData = {
-        labels: <?php echo json_encode($statusLabels); ?>,
-        datasets: [{
-            data: <?php echo json_encode($statusData); ?>,
-            backgroundColor: <?php echo json_encode($statusColors); ?>,
-            borderWidth: 0
-        }]
-    };
-
-    // Initialisation des graphiques
-    function initCharts() {
-        // Graphique d'évolution
-        const evolutionCtx = document.getElementById('evolutionChart').getContext('2d');
-        evolutionChart = new Chart(evolutionCtx, {
-            type: 'line',
-            data: evolutionData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            usePointStyle: true,
-                            padding: 20
-                        }
-                    }
+        // Données pour les graphiques depuis PHP
+        const evolutionData = {
+            labels: <?php echo json_encode($evolutionLabels); ?>,
+            datasets: [{
+                    label: 'Finalisés',
+                    data: <?php echo json_encode($evolutionFinalises); ?>,
+                    borderColor: '#3b82f6', // Tailwind blue-500
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
+                {
+                    label: 'Rejetés',
+                    data: <?php echo json_encode($evolutionRejetes); ?>,
+                    borderColor: '#f59e0b', // Tailwind yellow-500
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }
+            ]
+        };
+
+        const statusData = {
+            labels: <?php echo json_encode($statusLabels); ?>,
+            datasets: [{
+                data: <?php echo json_encode($statusData); ?>,
+                // Using a darker shade for bars for better visibility
+                backgroundColor: ['#ef4444', '#10b981', '#f59e0b', '#6b7280'].map(color => Chart.helpers.color(color).alpha(0.8).rgbString()),
+                borderColor: ['#dc2626', '#059669', '#d97706', '#4b5563'], // Corresponding darker borders
+                borderWidth: 1
+            }]
+        };
+
+        // Initialisation des graphiques
+        function initCharts() {
+            // Graphique d'évolution
+            const evolutionCtx = document.getElementById('evolutionChart').getContext('2d');
+            evolutionChart = new Chart(evolutionCtx, {
+                type: 'line',
+                data: evolutionData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: {
+                                    size: 13,
+                                    family: 'Inter, sans-serif'
+                                },
+                                color: '#4b5563' // Tailwind gray-700
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)', // Tailwind slate-900 with transparency
+                            titleColor: '#f9fafb', // Tailwind gray-50
+                            bodyColor: '#e5e7eb', // Tailwind gray-200
+                            padding: 10,
+                            cornerRadius: 6,
+                            displayColors: true,
+                            boxPadding: 4
                         }
                     },
-                    x: {
-                        grid: {
-                            display: false
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e5e7eb', // Tailwind gray-200
+                                borderColor: '#e5e7eb',
+                                borderWidth: 1
+                            },
+                            ticks: {
+                                color: '#6b7280' // Tailwind gray-500
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                borderColor: '#e5e7eb',
+                                borderWidth: 1
+                            },
+                            ticks: {
+                                color: '#6b7280' // Tailwind gray-500
+                            }
                         }
-                    }
-                },
-                elements: {
-                    point: {
-                        radius: 4,
-                        hoverRadius: 6
+                    },
+                    elements: {
+                        point: {
+                            radius: 4,
+                            hoverRadius: 6,
+                            backgroundColor: '#ffffff', // White point fill
+                            borderColor: function(context) {
+                                return context.dataset.borderColor;
+                            },
+                            borderWidth: 2
+                        },
+                        line: {
+                            borderWidth: 2
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        // Graphique de statut
-        const statusCtx = document.getElementById('statusChart').getContext('2d');
-        statusChart = new Chart(statusCtx, {
-            type: 'doughnut',
-            data: statusData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            usePointStyle: true,
-                            padding: 15
+            // Graphique de statut - CHANGED TO BAR CHART
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            statusChart = new Chart(statusCtx, {
+                type: 'bar', // Changed from 'doughnut' to 'bar'
+                data: statusData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false // No legend needed for single-dataset bar chart
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#f9fafb',
+                            bodyColor: '#e5e7eb',
+                            padding: 10,
+                            cornerRadius: 6,
+                            displayColors: true,
+                            boxPadding: 2
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e5e7eb',
+                                borderColor: '#e5e7eb',
+                                borderWidth: 1
+                            },
+                            ticks: {
+                                color: '#6b7280'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                borderColor: '#e5e7eb',
+                                borderWidth: 1
+                            },
+                            ticks: {
+                                color: '#6b7280'
+                            }
                         }
                     }
-                },
-                cutout: '60%'
-            }
-        });
-    }
+                }
+            });
+        }
 
-    // Fonctions d'action
-    function refreshCharts() {
-        showNotification('Actualisation des données...', 'info');
-        setTimeout(() => {
-            showNotification('Données actualisées avec succès', 'success');
-        }, 1500);
-    }
-
-    function generateReport() {
-        showNotification('Génération du rapport mensuel...', 'info');
-        setTimeout(() => {
-            showNotification('Rapport mensuel généré avec succès', 'success');
-        }, 3000);
-    }
-
-    function exportData() {
-        showNotification('Export des données en cours...', 'info');
-        setTimeout(() => {
-            showNotification('Données exportées au format Excel', 'success');
-        }, 2000);
-    }
-
-    function viewArchives() {
-        showNotification('Redirection vers les archives...', 'info');
-        setTimeout(() => {
-            showNotification('Ouverture de la section archives', 'success');
-        }, 1000);
-    }
-
-    function settings() {
-        showNotification('Ouverture des paramètres...', 'info');
-    }
-
-    // Système de notifications
-    function showNotification(message, type) {
-        const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 px-4 py-2 rounded-md text-white text-sm font-medium z-50 ${
-                type === 'success' ? 'bg-green-600' : 
-                type === 'error' ? 'bg-red-600' : 
-                type === 'info' ? 'bg-blue-600' : 'bg-gray-600'
+        // Fonctions d'action
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-6 right-6 px-5 py-3 rounded-lg text-white text-sm font-semibold shadow-xl z-50 transform transition-all duration-300 ease-out flex items-center space-x-2 ${
+                type === 'success' ? 'bg-green-500' :
+                type === 'error' ? 'bg-red-500' :
+                type === 'info' ? 'bg-blue-500' : 'bg-gray-500'
             }`;
-        notification.innerHTML = `
-                <div class="flex items-center">
-                    <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'info'} mr-2"></i>
-                    ${message}
-                </div>
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle'} text-lg"></i>
+                <span>${message}</span>
             `;
 
-        document.body.appendChild(notification);
+            document.body.appendChild(notification);
 
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
-    }
-
-    // Animation des métriques au chargement
-    function animateMetrics() {
-        const metrics = document.querySelectorAll('.metric-value');
-        metrics.forEach((metric, index) => {
-            const finalValue = metric.textContent;
-            metric.textContent = '0';
-
+            // Animate in
             setTimeout(() => {
-                const increment = finalValue.includes('%') ? 1 : finalValue.includes('j') ? 0.1 : 1;
-                const target = parseFloat(finalValue);
-                let current = 0;
+                notification.style.transform = 'translateY(0)';
+                notification.style.opacity = '1';
+            }, 10); // Small delay to allow CSS to render initial state
 
-                const timer = setInterval(() => {
-                    current += increment;
-                    if (current >= target) {
-                        current = target;
-                        clearInterval(timer);
-                    }
-
-                    if (finalValue.includes('%')) {
-                        metric.textContent = Math.round(current) + '%';
-                    } else if (finalValue.includes('j')) {
-                        metric.textContent = current.toFixed(1) + 'j';
-                    } else {
-                        metric.textContent = Math.round(current);
-                    }
-                }, 50);
-            }, index * 200);
-        });
-    }
-
-    // Initialisation
-    document.addEventListener('DOMContentLoaded', function() {
-        initCharts();
-        animateMetrics();
-
-        const cards = document.querySelectorAll('.fade-in');
-        cards.forEach((card, index) => {
+            // Animate out and remove
             setTimeout(() => {
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, index * 100);
-        });
+                notification.style.transform = 'translateY(-20px)';
+                notification.style.opacity = '0';
+                notification.addEventListener('transitionend', () => notification.remove());
+            }, 3000);
+        }
 
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'r') {
-                e.preventDefault();
+        function refreshCharts() {
+            showNotification('Actualisation des données...', 'info');
+            setTimeout(() => {
+                // In a real application, you would re-fetch data here
+                // and then update chart data and call chart.update()
+                // For this example, we just simulate success
+                showNotification('Données actualisées avec succès', 'success');
+            }, 1500);
+        }
+
+        function generateReport() {
+            showNotification('Génération du rapport mensuel...', 'info');
+            setTimeout(() => {
+                showNotification('Rapport mensuel généré avec succès', 'success');
+            }, 3000);
+        }
+
+        function exportData() {
+            showNotification('Export des données en cours...', 'info');
+            setTimeout(() => {
+                showNotification('Données exportées au format Excel', 'success');
+            }, 2000);
+        }
+
+        function viewArchives() {
+            showNotification('Redirection vers les archives...', 'info');
+            setTimeout(() => {
+                showNotification('Ouverture de la section archives', 'success');
+            }, 1000);
+        }
+
+        function settings() {
+            showNotification('Ouverture des paramètres...', 'info');
+        }
+
+        // Animation des métriques au chargement
+        function animateMetrics() {
+            const metrics = document.querySelectorAll('.metric-value');
+            metrics.forEach((metric, index) => {
+                const finalValueText = metric.textContent;
+                const isPercentage = finalValueText.includes('%');
+                const isDays = finalValueText.includes('j');
+                const finalValue = parseFloat(finalValueText);
+
+                metric.textContent = isPercentage ? '0%' : (isDays ? '0.0j' : '0');
+
+                setTimeout(() => {
+                    const duration = 1500; // milliseconds
+                    const startTime = performance.now();
+
+                    function animate(currentTime) {
+                        const elapsedTime = currentTime - startTime;
+                        const progress = Math.min(elapsedTime / duration, 1);
+                        let currentValue = progress * finalValue;
+
+                        if (isPercentage) {
+                            metric.textContent = Math.round(currentValue) + '%';
+                        } else if (isDays) {
+                            metric.textContent = currentValue.toFixed(1) + 'j';
+                        } else {
+                            metric.textContent = Math.round(currentValue);
+                        }
+
+                        if (progress < 1) {
+                            requestAnimationFrame(animate);
+                        }
+                    }
+                    requestAnimationFrame(animate);
+                }, index * 200);
+            });
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+            animateMetrics();
+
+            const cards = document.querySelectorAll('.fade-in');
+            cards.forEach((card, index) => {
+                // Apply a slight delay for staggered fade-in
+                card.style.animationDelay = `${index * 0.05}s`;
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'r') {
+                    e.preventDefault();
+                    refreshCharts();
+                }
+            });
+
+            // Auto-refresh every 5 minutes (300000 ms)
+            setInterval(() => {
                 refreshCharts();
-            }
+            }, 300000);
         });
-    });
-
-    setInterval(() => {
-        refreshCharts();
-    }, 300000);
     </script>
 </body>
 

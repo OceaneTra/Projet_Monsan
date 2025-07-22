@@ -51,6 +51,7 @@ class DashboardCommissionController
             'repartition_statuts' => [],
             'performance_categories' => [],
             'activites_recentes' => [],
+            'rapports_en_attente' => [],
             'rapports_details' => [],
             'evaluations_rapports' => []
         ];
@@ -64,6 +65,7 @@ class DashboardCommissionController
             $stats['repartition_statuts'] = $this->getRepartitionStatuts();
             $stats['performance_categories'] = $this->getPerformanceCategories();
             $stats['activites_recentes'] = $this->getActivitesRecentes();
+            $stats['rapports_en_attente'] = $this->getRapportsEnAttenteDeValidation();
             $stats['rapports_details'] = $this->getRapportsDetails();
             $stmt = Database::getConnection()->query('
                 SELECT e.*, 
@@ -285,6 +287,35 @@ class DashboardCommissionController
         }
     }
 
+     /**
+     * Récupère les rapports en attente de validation
+     * @return array
+     */
+    private function getRapportsEnAttenteDeValidation()
+    {
+        try {
+            $query = "SELECT 
+                        v.id_rapport,
+                        r.nom_rapport as titre,
+                        e.nom_etu as nom_etudiant,
+                        e.prenom_etu as prenom_etudiant,
+                        ens.nom_enseignant,
+                        ens.prenom_enseignant
+                      FROM rapport_etudiants r
+                      LEFT JOIN etudiants e ON r.num_etu = e.num_etu
+                      LEFT JOIN enseignants ens ON v.id_enseignant = ens.id_enseignant
+                      WHERE r.statut_rapport = 'en_attente_commission'
+                      ORDER BY v.date_validation DESC
+                      LIMIT 10";
+            $stmt = Database::getConnection()->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Erreur getRapportsEnAttenteDeValidation: " . $e->getMessage());
+            return [];
+        }
+    }
+
     /**
      * Récupère les détails des rapports pour le tableau
      * @return array
@@ -343,6 +374,7 @@ class DashboardCommissionController
                 'en_attente' => 0,
                 'evolution_mensuelle' => [],
                 'repartition_statuts' => [],
+                'rapports_en_attente' => [],
                 'performance_categories' => [],
                 'activites_recentes' => [],
                 'rapports_details' => [],
