@@ -13,12 +13,9 @@ include 'menu.php';
 include __DIR__ . '/../ressources/routes/gestionUtilisateurRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionRhRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionDashboardRoutes.php';
-include __DIR__ . '/../ressources/routes/dashboardEnseignantRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionScolariteRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionNotesRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionCandidaturesRoutes.php';
-include __DIR__ . '/../ressources/routes/listeEtudiantsRoutes.php';
-include __DIR__ . '/../ressources/routes/dossierAcademiqueRoutes.php';
 include __DIR__ . '/../ressources/routes/verificationRapportsRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionReclamationsScolariteRoutes.php';
 include __DIR__ . '/../ressources/routes/evaluationDossiersRoutes.php';
@@ -535,7 +532,7 @@ if (!isset($_SESSION['id_utilisateur'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniValid | <?php echo htmlspecialchars($currentPageLabel); ?></title>
+    <title>EduX | <?php echo htmlspecialchars($currentPageLabel); ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="shortcut icon" href="./images/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -569,137 +566,88 @@ if (!isset($_SESSION['id_utilisateur'])) {
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.12.0/cdn.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
-
 </head>
 
 <body class="bg-gray-50 font-sans antialiased">
     <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-white overflow-hidden">
         <!-- Sidebar -->
-        <div class="hidden md:flex md:flex-shrink-0 ">
-            <div class="flex flex-col w-64 border-r border-gray-200 bg-white">
-                <div class="flex items-center justify-center h-20 px-4 bg-green-100 shadow-sm">
-                    <div class="flex overflow-hidden items-center ">
-                        <img src="./images/logo.png" height="130px" width="130px" alt="">
-                    </div>
+        <div x-show="sidebarOpen" @click.away="sidebarOpen = false" class="fixed inset-0 z-40 flex md:hidden">
+            <div class="fixed inset-0 bg-gray-600 bg-opacity-75"></div>
+            <div class="relative flex-1 flex flex-col max-w-xs w-full bg-white rounded-r-3xl shadow-xl p-4">
+                <div class="absolute top-0 right-0 -mr-12 pt-2">
+                    <button @click="sidebarOpen = false"
+                        class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                        <span class="sr-only">Close sidebar</span>
+                        <i class="fas fa-times text-white"></i>
+                    </button>
                 </div>
-                <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
-                    <nav class="mt-5 px-2 space-y-2">
+                <!-- Sidebar content for mobile -->
+                <div class="flex items-center justify-center h-20 mb-6">
+                    <img src="./images/logo.png" height="80" width="80" alt="Logo" class="rounded-full shadow-md">
+                </div>
+                <div class="flex-1 h-0 pb-4 overflow-y-auto">
+                    <nav class="space-y-3">
                         <?php echo $menuHTML; ?>
-                        <form action="logout.php" method="POST" class="w-full">
+                        <form action="logout.php" method="POST" class="w-full mt-4">
                             <button type="submit"
-                                class="w-full flex items-center px-2 py-3 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 group">
-                                <i class="fas fa-power-off mr-3 text-gray-400 group-hover:text-gray-500"></i>
-                                Déconnexion
+                                class="w-full flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-full text-white bg-black hover:bg-yellow-custom hover:text-black transition-all duration-200 shadow">
+                                <i class="fas fa-power-off mr-2"></i> Déconnexion
                             </button>
                         </form>
                     </nav>
                 </div>
             </div>
         </div>
-
         <!-- Static sidebar for desktop -->
         <div class="hidden md:flex md:flex-shrink-0">
-            <div class="flex flex-col w-64">
-                <div class="flex items-center justify-center h-20 px-4 bg-white border-r">
-                    <img src="./images/logo.png" height="130px" width="130px" alt="Logo">
+            <div class="flex flex-col w-64 h-full bg-white rounded-3xl shadow-xl m-4 p-4">
+                <div class="flex items-center justify-center h-20 mb-6">
+                    <img src="./images/logo.png" height="80" width="80" alt="Logo" class="rounded-full shadow-md">
                 </div>
-                <div class="flex flex-col flex-grow border-r border-gray-200 pt-5 pb-4 bg-white overflow-y-auto">
-                    <div class="flex-grow px-4">
-                        <nav class="space-y-2">
-                            <?php echo $menuHTML; ?>
-                        </nav>
-                    </div>
-                    <div class="flex-shrink-0 px-4">
-                        <form action="logout.php" method="POST" id="logoutFormDesktop" class="w-full">
-                            <button type="submit" form="logoutFormDesktop"
-                                class="w-full flex items-center px-2 py-3 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 group">
-                                <i class="fas fa-power-off mr-3 text-gray-400 group-hover:text-gray-500"></i>
-                                Déconnexion
-                            </button>
-                        </form>
-                    </div>
+                <div class="flex flex-col flex-grow overflow-y-auto">
+                    <nav class="space-y-3">
+                        <?php echo $menuHTML; ?>
+                    </nav>
+                </div>
+                <div class="mt-6">
+                    <form action="logout.php" method="POST" id="logoutFormDesktop" class="w-full">
+                        <button type="submit" form="logoutFormDesktop"
+                            class="w-full flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-full text-white bg-black hover:bg-yellow-custom hover:text-black transition-all duration-200 shadow">
+                            <i class="fas fa-power-off mr-2"></i> Déconnexion
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-
         <!-- Main content -->
         <div class="flex flex-col flex-1 w-0 overflow-hidden">
             <!-- Top navigation -->
-            <div class="flex items-center justify-between h-20 px-4 border-b border-gray-200 bg-green-100 shadow-sm">
-                <div class="flex items-center">
-                    <button id="mobileMenuButton" class="md:hidden text-gray-500 focus:outline-none mr-3">
-                        <i class="fas fa-bars"></i>
-                    </button>
-
-                    <img src="./images/logo_mathInfo_fond_blanc.png" alt="Logo" class="h-16 w-18 mr-4">
-                    <?php
-                    $date = new DateTime();
-                    $jours = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
-                    $mois = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
-                    $date_fr = $jours[$date->format('w')] . ' ' . $date->format('d') . ' ' . $mois[$date->format('n') - 1] . ' ' . $date->format('Y');
-                    $heure = $date->format('H:i');
-                    ?>
-                    <div class="flex items-center ">
-                        <h2 class="text-lg font-bold "><?php echo $date_fr; ?></h2>
-                        <p class="text-sm opacity-90"><?php echo $heure; ?></p>
-                    </div>
-
-
+            <div
+                class="relative z-10 flex-shrink-0 flex h-20 bg-white shadow-xl rounded-b-3xl m-4 mx-4 items-center px-8">
+                <button @click.stop="sidebarOpen = true"
+                    class="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-yellow-500 md:hidden">
+                    <span class="sr-only">Open sidebar</span>
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="flex items-center space-x-4 flex-1">
+                    <img src="./images/logo.png" alt="Logo" class="h-12 w-12 rounded-full shadow-md hidden md:block">
+                    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">
+                        <?php echo htmlspecialchars($currentPageLabel); ?></h1>
                 </div>
                 <div class="flex items-center space-x-6">
-                    <div class="flex items-center space-x-4">
-                        <div class="relative flex flex-col ">
-                            <span class="text-md font-medium text-green-500">Bienvenue,
-                                <?php echo htmlspecialchars($_SESSION['nom_utilisateur']) ?></span>
-                            <span class="text-xs text-green-500 justify-start">
-                                <?php echo htmlspecialchars($_SESSION['lib_GU']) ?></span>
-                        </div>
+                    <div class="text-right">
+                        <p class="text-md font-semibold text-gray-800">Bienvenue,
+                            <?php echo htmlspecialchars($_SESSION['nom_utilisateur']) ?></p>
+                        <p class="text-xs text-gray-500"><?php echo htmlspecialchars($_SESSION['lib_GU']) ?></p>
+                    </div>
+                    <div
+                        class="flex items-center justify-center w-12 h-12 rounded-full bg-yellow-400 text-black font-bold text-lg shadow-md">
+                        <i class="fas fa-user"></i>
                     </div>
                 </div>
             </div>
-
             <!-- Main content area -->
             <main class="flex-1 relative overflow-y-auto focus:outline-none p-6 bg-gray-50">
-                <?php
-                // Déterminer le lien de retour
-                $backLink = null;
-                $backText = 'Retour';
-
-                switch (true) {
-                    case ($currentMenuSlug === 'parametres_generaux' && $currentAction):
-                        $backLink = '?page=parametres_generaux';
-                        $backText = 'Retour aux Paramètres';
-                        break;
-
-                    case ($currentMenuSlug === 'gestion_rapports' && $currentAction):
-                        $backLink = '?page=gestion_rapports';
-                        break;
-
-                    case ($currentMenuSlug === 'gestion_reclamations' && $currentAction):
-                        $backLink = '?page=gestion_reclamations';
-                        break;
-                    case ($currentMenuSlug === 'candidature_soutenance' && $currentAction):
-                        $backLink = '?page=candidature_soutenance';
-                        break;
-                    case ($currentMenuSlug === 'gestion_etudiants' && $currentAction):
-                        $backLink = '?page=gestion_etudiants';
-                        break;
-                    case ($currentMenuSlug === 'archives_dossiers_soutenance' && $currentAction):
-                        $backLink = '?page=archives_dossiers_soutenance';
-                        break;
-                }
-
-                // Afficher le bouton si un lien de retour a été défini
-                if ($backLink): ?>
-                <div class="mb-6">
-                    <a href="<?= htmlspecialchars($backLink) ?>"
-                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-green-500 transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        <?= htmlspecialchars($backText) ?>
-                    </a>
-                </div>
-                <?php endif; ?>
-
                 <?php
                 if (!empty($contentFile) && file_exists($contentFile)) {
                     include $contentFile;
@@ -718,9 +666,6 @@ if (!isset($_SESSION['id_utilisateur'])) {
             </main>
         </div>
     </div>
-    <script>
-    // Your existing JS can go here. I've used AlpineJS for the sidebar toggle.
-    </script>
 </body>
 
 </html>
