@@ -11,11 +11,11 @@
         theme: {
             extend: {
                 colors: {
-                    'primary': '#157A6E',
+                    'primary': '#27A062',
                     'primary-dark': '#0B3C32',
                     'secondary': '#2F53CD',
                     'secondary-light': '#60A5FA',
-                    'accent': '#F6C700',
+                    'accent': '#2F54CC',
                     'yellow-custom': '#FFD700',
                     'yellow-bright': '#FFEB3B'
                 },
@@ -137,7 +137,7 @@
     }
 
     .hero-gradient {
-        background: linear-gradient(135deg, #F6C700 0%, #FFD700 100%);
+        background: linear-gradient(135deg, #33A74F 0%, #375BCE 100%);
     }
 
     .nav-link {
@@ -267,11 +267,7 @@
                     </div>
                 </div>
 
-                <!-- Background text -->
-                <div class="absolute -bottom-16 left-1/2 transform -translate-x-1/2 text-center">
-                    <h2 class="text-4xl font-bold text-primary/20 select-none">Bienvenue</h2>
-                    <p class="text-primary/15 select-none">Votre parcours d'apprentissage continue</p>
-                </div>
+
             </div>
 
             <!-- Right Side - Login Form -->
@@ -282,7 +278,7 @@
                         <div class=" mx-auto mb-4 flex items-center justify-center">
                             <img src="./images/logo.png" alt="logo UniValid" class="w-20">
                         </div>
-                        <h1 class="text-3xl font-bold mb-2">Connexion</h1>
+                        <h1 class="text-3xl font-bold mb-2 text-primary">Connexion</h1>
                         <p class="text-gray-600">Connectez-vous pour continuer à suivre vos évaluations </p>
                     </div>
 
@@ -307,9 +303,10 @@
                         <!-- Remember & Forgot Password -->
                         <div class="flex justify-between items-center text-sm">
                             <label class="flex items-center space-x-2 cursor-pointer">
-                                <a href="index.php"><span class="text-gray-600">Aller à l'accueil</span></a>
+                                <a href="index.php"><span class="text-accent font-medium hover:text-accent-700">Aller à
+                                        l'accueil</span></a>
                             </label>
-                            <a href="forgot_password.php" class="text-yellow-600 hover:text-yellow-700 font-medium">
+                            <a href="forgot_password.php" class="text-accent hover:text-accent-700 font-medium">
                                 Mot de passe oublié ?
                             </a>
                         </div>

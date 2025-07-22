@@ -101,11 +101,11 @@
 </head>
 
 <body class="bg-gray-50 font-sans overflow-x-hidden">
-    <nav class="bg-white shadow-sm px-6 py-4 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
+    <nav class="bg-white shadow-sm px-6 py-4 sticky top-0 z-50 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-8">
                 <div class="flex items-center space-x-3">
-                    <img src="./images/logo.png" alt="logo" width="130" height="70" title="logo" style="">
+                    <img src="./images/logo.png" alt="logo" width="130" height="70" title="logo">
                 </div>
                 <div class="hidden md:flex space-x-6">
                     <a href="#features" class="nav-link text-gray-600 hover:text-primary transition">Fonctionnalités</a>

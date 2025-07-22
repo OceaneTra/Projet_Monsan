@@ -3284,6 +3284,11 @@
       border-color: var(--color-green-300);
     }
   }
+  .focus\:border-green-400 {
+    &:focus {
+      border-color: var(--color-green-400);
+    }
+  }
   .focus\:border-green-500 {
     &:focus {
       border-color: var(--color-green-500);

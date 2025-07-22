@@ -11,6 +11,11 @@
         theme: {
             extend: {
                 colors: {
+                    'primary': '#27A062', // Vert institutionnel
+                    'primary-dark': '#0B3C32',
+                    'secondary': '#2F53CD',
+                    'secondary-light': '#60A5FA',
+                    'accent': '#2F54CC', // Jaune/Or pour le contraste
                     'yellow-custom': '#FFD700',
                     'yellow-bright': '#FFEB3B'
                 },
@@ -27,6 +32,10 @@
     }
     </script>
     <style>
+    .hero-gradient {
+        background: linear-gradient(135deg, #33A74F 0%, #375BCE 100%);
+    }
+
     @keyframes float {
 
         0%,
@@ -133,34 +142,21 @@
 
     <!-- Background Geometric Elements -->
     <div class="fixed inset-0 pointer-events-none">
-        <div class="absolute -top-40 -right-40 w-96 h-96 bg-yellow-400 rounded-full opacity-20 animate-pulse-slow">
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-primary rounded-full opacity-20 animate-pulse-slow">
         </div>
-        <div class="absolute top-20 left-20 w-8 h-8 bg-yellow-400 rounded-full animate-float"></div>
+        <div class="absolute top-20 left-20 w-8 h-8 bg-primary rounded-full animate-float"></div>
         <div class="absolute top-40 right-32 w-6 h-6 bg-black rounded-full animate-float-delayed"></div>
         <div class="absolute bottom-32 left-16 geometric-shape">
-            <div class="w-12 h-12 border-3 border-yellow-400 transform rotate-45"></div>
+            <div class="w-12 h-12 border-3 border-accent transform rotate-45"></div>
         </div>
         <div class="absolute bottom-20 right-20 geometric-shape">
             <div class="w-10 h-10 border-2 border-gray-300 transform rotate-45"></div>
         </div>
-        <div class="absolute top-1/2 left-10 w-4 h-4 bg-yellow-400 rounded-full animate-pulse-slow"></div>
+        <div class="absolute top-1/2 left-10 w-4 h-4 bg-accent rounded-full animate-pulse-slow"></div>
         <div class="absolute -bottom-20 -left-20 w-64 h-64 border-4 border-gray-200 transform rotate-45 opacity-30">
         </div>
     </div>
 
-    <!-- Header -->
-    <nav class="relative z-10 bg-white/80 backdrop-blur-md shadow-sm px-6 py-4">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="text-2xl font-bold">EduX</div>
-            <a href="#" class="text-gray-600 hover:text-black transition flex items-center space-x-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                <span>Retour à la connexion</span>
-            </a>
-        </div>
-    </nav>
 
     <!-- Main Content -->
     <div class="relative z-10 flex items-center justify-center min-h-screen py-20 px-6">
@@ -171,7 +167,7 @@
                 <div class="relative animate-bounce-in">
                     <!-- Main illustration circle -->
                     <div
-                        class="w-96 h-96 bg-yellow-400 rounded-full flex items-center justify-center relative overflow-hidden">
+                        class="w-96 h-96 hero-gradient rounded-full flex items-center justify-center relative overflow-hidden">
                         <!-- Email/Lock illustration -->
                         <div class="relative z-10">
                             <!-- Large envelope -->
@@ -184,7 +180,7 @@
 
                                 <!-- Lock icon on envelope -->
                                 <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                                    <div class="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
+                                    <div class="w-8 h-8 bg-accent-400 rounded-full flex items-center justify-center">
                                         <div class="w-4 h-4 bg-black rounded-sm relative">
                                             <div
                                                 class="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 border-2 border-black rounded-full bg-transparent">
@@ -209,16 +205,16 @@
                         <div class="absolute top-16 left-12 w-6 h-6 bg-white rounded-full opacity-60 animate-float">
                         </div>
                         <div
-                            class="absolute bottom-24 right-20 w-8 h-8 bg-black rounded-full opacity-40 animate-float-delayed">
+                            class="absolute bottom-24 right-20 w-8 h-8 bg-accent rounded-full opacity-40 animate-float-delayed">
                         </div>
                     </div>
 
                     <!-- Floating elements around illustration -->
-                    <div class="absolute -top-8 -right-8 w-16 h-16 bg-black rounded-full animate-float"></div>
+                    <div class="absolute -top-8 -right-8 w-16 h-16 bg-accent rounded-full animate-float"></div>
                     <div
-                        class="absolute -bottom-8 -left-8 w-20 h-20 border-4 border-yellow-400 transform rotate-45 animate-float-delayed">
+                        class="absolute -bottom-8 -left-8 w-20 h-20 border-4 border-primary transform rotate-45 animate-float-delayed">
                     </div>
-                    <div class="absolute top-20 -left-12 w-8 h-8 bg-yellow-400 rounded-full animate-pulse-slow"></div>
+                    <div class="absolute top-20 -left-12 w-8 h-8 bg-primary-400 rounded-full animate-pulse-slow"></div>
                 </div>
             </div>
 
@@ -247,21 +243,21 @@
                             <!-- Email Input -->
                             <div class="input-group">
                                 <input type="email" id="resetEmail" placeholder=" "
-                                    class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:border-yellow-400 focus:outline-none transition-all duration-200 bg-white/50"
+                                    class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:border-green-400 focus:outline-none transition-all duration-200 bg-white/50"
                                     required>
                                 <label for="resetEmail">Adresse email</label>
                             </div>
 
                             <!-- Submit Button -->
                             <button type="submit"
-                                class="w-full bg-yellow-400 text-black py-4 rounded-xl font-semibold hover:bg-yellow-500 transition-all duration-300 hover:scale-105 transform hover:shadow-lg">
+                                class="w-full bg-primary text-black py-4 rounded-xl font-semibold hover:bg-yellow-500 transition-all duration-300 hover:scale-105 transform hover:shadow-lg">
                                 Envoyer le Lien de Réinitialisation
                             </button>
                         </form>
 
                         <!-- Back to Login -->
                         <div class="text-center mt-8">
-                            <a href="#"
+                            <a href="page_connexion.php"
                                 class="text-gray-600 hover:text-black flex items-center justify-center space-x-2 transition">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
