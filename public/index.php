@@ -11,11 +11,11 @@
         theme: {
             extend: {
                 colors: {
-                    'primary': '#157A6E', // Vert institutionnel
+                    'primary': '#27A062', // Vert institutionnel
                     'primary-dark': '#0B3C32',
                     'secondary': '#2F53CD',
                     'secondary-light': '#60A5FA',
-                    'accent': '#F6C700', // Jaune/Or pour le contraste
+                    'accent': '#2F54CC', // Jaune/Or pour le contraste
                     'yellow-custom': '#FFD700',
                     'yellow-bright': '#FFEB3B'
                 },
@@ -95,23 +95,23 @@
     }
 
     .hero-gradient {
-        background: linear-gradient(135deg, #F6C700 0%, #FFD700 100%);
+        background: linear-gradient(135deg, #33A74F 0%, #375BCE 100%);
     }
     </style>
 </head>
 
 <body class="bg-gray-50 font-sans overflow-x-hidden">
-    <nav class="bg-white shadow-sm px-6 py-4 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
+    <nav class="bg-white shadow-sm px-6 py-4 sticky top-0 z-50 backdrop-blur-sm">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-8">
                 <div class="flex items-center space-x-3">
-                    <img src="./images/logo.png" alt="logo" width="130" height="70" title="logo" style="">
+                    <img src="./images/logo.png" alt="logo" width="130" height="70" title="logo">
                 </div>
                 <div class="hidden md:flex space-x-6">
                     <a href="#features" class="nav-link text-gray-600 hover:text-primary transition">Fonctionnalités</a>
                     <a href="#process" class="nav-link text-gray-600 hover:text-primary transition">Processus</a>
-                    <a href="#about" class="nav-link text-gray-600 hover:text-primary transition">À propos</a>
-                    <a href="#contact" class="nav-link text-gray-600 hover:text-primary transition">Contact</a>
+                    <a href="#temoignages" class="nav-link text-gray-600 hover:text-primary transition">Témoignages</a>
+
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -132,7 +132,7 @@
                     <div class="w-8 h-8 border-2 border-primary rotate-45"></div>
                 </div>
 
-                <h1 class="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                <h1 class="text-5xl lg:text-6xl text-gray-700 font-bold mb-6 leading-tight">
                     Simplifiez la Gestion<br>
                     de Vos <span class="text-primary">Soutenances</span>
                 </h1>
@@ -180,7 +180,7 @@
                                     class="absolute bottom-6 left-1/2 transform -translate-x-1/2 w-8 h-2 bg-primary rounded-full">
                                 </div>
                             </div>
-                            <div class="w-24 h-16 bg-gray-800 rounded-lg mx-auto relative shadow-xl">
+                            <div class="w-24 h-16 bg-primary rounded-lg mx-auto relative shadow-xl">
                                 <div
                                     class="w-20 h-12 bg-white rounded-sm absolute top-2 left-2 flex items-center justify-center">
                                     <div class="w-12 h-1 bg-primary rounded"></div>
@@ -202,7 +202,7 @@
     <section id="features" class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold mb-4 text-gray-900">Une Plateforme, Trois Avantages Clés</h2>
+                <h2 class="text-4xl font-bold mb-4 text-gray-700">Une Plateforme, Trois Avantages Clés</h2>
                 <p class="text-gray-600 max-w-2xl mx-auto">Découvrez comment nous facilitons la vie de toute la
                     communauté universitaire.</p>
             </div>
@@ -219,10 +219,11 @@
                             </svg>
                         </div>
                     </div>
-                    <h3 class="text-xl font-bold mb-4 text-gray-900">Planification Simplifiée</h3>
+                    <h3 class="text-xl font-bold mb-4 text-gray-700">Planification Simplifiée</h3>
                     <p class="text-gray-600">
-                        Déposez vos rapport en quelques clics, verifier l avancer de votre rapport et la progrmmation de
-                        la date . Fini les allers-retours interminables.
+                        Déposez vos rapports en quelques clics, vérifier l'avancer de votre rapport et la programmation
+                        de
+                        la date. Fini les allers-retours interminables.
                     </p>
                 </div>
 
@@ -237,7 +238,7 @@
                             </svg>
                         </div>
                     </div>
-                    <h3 class="text-xl font-bold mb-4 text-gray-900">Suivi en Temps Réel</h3>
+                    <h3 class="text-xl font-bold mb-4 text-gray-700">Suivi en Temps Réel</h3>
                     <p class="text-gray-600">
                         Recevez des notifications automatiques pour chaque étape validée. Suivez l'avancement de votre
                         dossier 24/7.
@@ -254,7 +255,7 @@
                             </svg>
                         </div>
                     </div>
-                    <h3 class="text-xl font-bold mb-4 text-gray-900">Archivage Numérique</h3>
+                    <h3 class="text-xl font-bold mb-4 text-gray-700">Archivage Numérique</h3>
                     <p class="text-gray-600">
                         Tous les mémoires, thèses et PV de soutenance sont archivés de manière sécurisée et accessible à
                         tout moment.
@@ -266,7 +267,7 @@
 
     <section id="process" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-6 text-center">
-            <h2 class="text-4xl font-bold mb-4 text-gray-900">Le Processus en 4 Étapes Claires</h2>
+            <h2 class="text-4xl font-bold mb-4 text-gray-700">Le Processus en 4 Étapes Claires</h2>
             <p class="text-gray-600 mb-12 max-w-2xl mx-auto">
                 De la soumission du sujet à la finalisation, votre parcours est balisé et transparent.
             </p>
@@ -276,7 +277,7 @@
                     <div
                         class="w-20 h-20 bg-primary/20 text-primary rounded-full mx-auto mb-6 flex items-center justify-center text-3xl font-bold">
                         1</div>
-                    <h3 class="font-bold text-lg mb-3 text-gray-900">Dépôt du Sujet</h3>
+                    <h3 class="font-bold text-lg mb-3 text-gray-700">Dépôt du Rapport</h3>
                     <p class="text-gray-600 text-sm">Soumettez votre proposition de mémoire ou de thèse directement sur
                         la plateforme pour validation.</p>
                 </div>
@@ -284,17 +285,19 @@
                     <div
                         class="w-20 h-20 bg-primary/20 text-primary rounded-full mx-auto mb-6 flex items-center justify-center text-3xl font-bold">
                         2</div>
-                    <h3 class="font-bold text-lg mb-3 text-gray-900">Validation Administrative</h3>
-                    <p class="text-gray-600 text-sm">Votre UFR et votre directeur de thèse examinent et valident votre
-                        sujet et votre calendrier.</p>
+                    <h3 class="font-bold text-lg mb-3 text-gray-700">Validation Administrative</h3>
+                    <p class="text-gray-600 text-sm">Votre UFR examine et approuve votre demande de candidature à la
+                        soutenance.
+                    </p>
                 </div>
                 <div class="card-hover bg-gray-50 p-8 rounded-2xl border border-gray-100">
                     <div
                         class="w-20 h-20 bg-primary/20 text-primary rounded-full mx-auto mb-6 flex items-center justify-center text-3xl font-bold">
                         3</div>
-                    <h3 class="font-bold text-lg mb-3 text-gray-900">Planification du Jury</h3>
-                    <p class="text-gray-600 text-sm">Coordonnez la date, l'heure et la salle avec les membres du jury
-                        disponibles sur la plateforme.</p>
+                    <h3 class="font-bold text-lg mb-3 text-gray-700">Examination de la commission de validation</h3>
+                    <p class="text-gray-600 text-sm">Votre rapport est examiné par les membres de la commission de
+                        validation des soutenances, par la suite un encadreur et un directeur de mémoire vous est
+                        attribués.</p>
                 </div>
                 <div class="card-hover bg-gray-50 p-8 rounded-2xl border border-gray-100">
                     <div
@@ -308,7 +311,7 @@
         </div>
     </section>
 
-    <section class="py-20 bg-gray-50">
+    <section id="temoignages" class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold mb-4 text-gray-900">Ce Que Disent Nos Utilisateurs</h2>
@@ -362,49 +365,17 @@
         </div>
     </section>
 
-    <section id="about" class="py-20 gradient-bg text-white">
-        <div class="max-w-4xl mx-auto px-6 text-center">
-            <div class="mb-8">
-                <h2 class="text-4xl font-bold mb-4">Prêt à moderniser vos soutenances ?</h2>
-                <p class="text-white/80 mb-8 max-w-2xl mx-auto text-lg">
-                    Rejoignez les milliers d'utilisateurs de l'Université Félix Houphouët-Boigny qui bénéficient déjà
-                    d'un processus de soutenance simplifié et efficace.
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="page_connexion.php"
-                        class="bg-accent text-primary px-8 py-4 rounded-full hover:bg-yellow-500 transition-all duration-300 hover:scale-105 font-bold">
-                        Se connecter
-                    </a>
-                    <a href="contact.php"
-                        class="border-2 border-white text-white px-8 py-4 rounded-full hover:bg-white hover:text-primary transition-all duration-300 font-bold">
-                        Nous Contacter
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <footer id="contact" class="bg-gray-900 text-white py-16">
+    <footer class="bg-gray-800 text-white py-16">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="grid md:grid-cols-4 gap-8 mb-8">
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
                 <div>
                     <div class="flex items-center space-x-3 mb-6">
-                        <img src="./images/logo.png" alt="logo" width="130" height="70" title="logo" style="">
+                        <img src="./images/logo.png" alt="logo" width="130" height="70" title="logo">
                     </div>
                     <p class="text-gray-400 mb-4">La plateforme officielle pour la gestion des soutenances de MATH-INFO
                         à l'Université Félix Houphouët-Boigny.</p>
                 </div>
-
-                <div>
-                    <h3 class="font-bold mb-4">Navigation</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-white transition">Accueil</a></li>
-                        <li><a href="#features" class="hover:text-white transition">Fonctionnalités</a></li>
-                        <li><a href="#process" class="hover:text-white transition">Processus</a></li>
-                        <li><a href="contact.php" class="hover:text-white transition">Contact</a></li>
-                    </ul>
-                </div>
-
                 <div>
                     <h3 class="font-bold mb-4">Espaces Utilisateurs</h3>
                     <ul class="space-y-2 text-gray-400">

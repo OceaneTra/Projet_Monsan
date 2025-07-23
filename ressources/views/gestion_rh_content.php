@@ -207,170 +207,275 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
 
 <body class="bg-gray-100 font-sans antialiased text-gray-800">
     <div class="min-h-screen flex flex-col">
-        <main class="flex-grow container mx-auto px-6 py-10">
+        <main class="flex-grow container mx-auto px-4 py-5">
 
-            <?php if (!empty($messageSuccess)): ?>
-                <div id="success-message"
-                    class="bg-green-100 border border-green-400 text-green-700 p-4 rounded-lg shadow-md mb-8 animate-fade-in-down"
-                    role="alert">
-                    <p class="flex items-center"><i class="fas fa-check-circle mr-3 text-lg"></i> <?= htmlspecialchars($messageSuccess) ?></p>
-                </div>
-            <?php endif; ?>
-            <?php if (!empty($messageErreur)): ?>
-                <div id="error-message"
-                    class="bg-red-100 border border-red-400 text-red-700 p-4 rounded-lg shadow-md mb-8 animate-fade-in-down"
-                    role="alert">
-                    <p class="flex items-center"><i class="fas fa-exclamation-triangle mr-3 text-lg"></i> <?= htmlspecialchars($messageErreur) ?></p>
-                </div>
-            <?php endif; ?>
-
-
-
-            <div class="header bg-white rounded-3xl p-8 lg:p-12 mb-8 shadow-xl relative overflow-hidden">
-                <div class="flex items-center gap-6 md:gap-8 flex-col md:flex-row text-center md:text-left">
-                    <div class="header-icon bg-gradient-to-br from-primary to-primary-dark text-white w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center text-4xl md:text-5xl shadow-lg">
-                        <i class="fas fa-clipboard-check"></i>
-                    </div>
-                    <div class="header-text">
-                        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2 tracking-tight">Gestion des ressources humaines</h1>
-                        <p class="text-lg text-gray-600 font-normal">Gérez efficacement les membres du personnel</p>
-                    </div>
+            <!-- Système d'onglets -->
+            <div class="mb-8">
+                <div class="border-b border-gray-300">
+                    <nav class="-mb-px flex space-x-4" aria-label="Tabs">
+                        <a href="?page=gestion_rh&tab=pers_admin"
+                            class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm hover:text-gray-700
+                                  <?= ($activeTab === 'pers_admin') ? 'border-green-500 text-green-600 bg-green-50' : 'border-transparent hover:border-gray-300' ?>">
+                            <i class="fas fa-users-cog mr-2"></i> Personnel administratif
+                        </a>
+                        <a href="?page=gestion_rh&tab=enseignant"
+                            class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm hover:text-gray-700
+                                  <?= ($activeTab === 'enseignant') ? 'border-green-500 text-green-600 bg-green-50' : 'border-transparent hover:border-gray-300' ?>">
+                            <i class="fas fa-user-tag mr-2"></i> Enseignants
+                        </a>
+                    </nav>
                 </div>
             </div>
 
-            <header class="flex flex-col md:flex-row justify-between items-center mb-10 p-6 bg-white rounded-2xl shadow-lg animate-fade-in-down">
-                <h1 class="text-4xl font-extrabold text-gray-900 flex items-ri mb-4 md:mb-0">
-                    <i class="fas fa-users-gear text-primary mr-5 text-4xl"></i>
-
-                </h1>
-                <div class="flex space-x-3">
-                    <a href="?page=gestion_rh&tab=pers_admin"
-                        class="px-6 py-3 rounded-full text-base font-semibold transition-all duration-300 transform hover:scale-105 shadow-md flex items-center justify-center
-                        <?= ($activeTab === 'pers_admin') ? 'tab-button-active' : 'tab-button-inactive' ?>">
-                        <i class="fas fa-user-tie mr-3"></i> Personnel Administratif
-                    </a>
-                    <a href="?page=gestion_rh&tab=enseignant"
-                        class="px-6 py-3 rounded-full text-base font-semibold transition-all duration-300 transform hover:scale-105 shadow-md flex items-center justify-center
-                        <?= ($activeTab === 'enseignant') ? 'tab-button-active' : 'tab-button-inactive' ?>">
-                        <i class="fas fa-chalkboard-teacher mr-3"></i> Enseignants
-                    </a>
-                </div>
-            </header>
-
+            <!-- Contenu des onglets -->
             <div>
+                <!-- Onglet Personnel administratif -->
                 <?php if ($activeTab === 'pers_admin'): ?>
-                    <!-- STAT CARDS -->
-                    <div class="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-8 -mt-25 mb-12 px-2">
-                        <div class="bg-gradient-to-br from-blue-100 to-blue-300 rounded-2xl shadow-xl p-8 flex flex-col items-center hover:scale-105 transition-transform">
-                            <i class="fas fa-file-alt text-4xl text-blue-600 mb-2"></i>
-                            <div class="text-3xl font-bold text-blue-800"><?php echo 0; ?></div>
-                            <div class="text-blue-700 mt-1">Total Membre du personnel administratif</div>
+                <div id="tab_pers_admin" class="flex flex-col">
+                    <?php if (!empty($messageSuccess)): ?>
+                    <div id="success-message"
+                        class="bg-green-50 border-l-4 border-green-400 text-green-700 p-4 rounded-md shadow-sm mb-6"
+                        role="alert">
+                        <p><?= htmlspecialchars($messageSuccess) ?></p>
+                    </div>
+                    <?php endif; ?>
+                    <?php if (!empty($messageErreur)): ?>
+                    <div id="error-message"
+                        class="bg-red-50 border-l-4 border-red-400 text-red-700 p-4 rounded-md shadow-sm mb-6"
+                        role="alert">
+                        <p><?= htmlspecialchars($messageErreur) ?></p>
+                    </div>
+                    <?php endif; ?>
+
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold text-gray-700">Gestion du personnel administratif</h3>
+                        <a href="?page=gestion_rh&tab=pers_admin&action=add" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-sm
+                                  transition duration-150 ease-in-out flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Ajouter un personnel
+                        </a>
+                    </div>
+                    <!-- Action Bar for Table -->
+                    <div
+                        class="px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-gray-200">
+                        <div class="relative w-full sm:w-1/2 lg:w-1/3 mb-4 sm:mb-0">
+                            <input type="text" id="searchInput" placeholder="Rechercher un personnel..."
+                                class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 justify-center sm:justify-end">
+                            <button type="button" onclick="printTable('pers_admin')"
+                                class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                                <i class="fas fa-print mr-2"></i>Imprimer
+                            </button>
+                            <button type="button" onclick="exportToExcel('pers_admin')"
+                                class="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50">
+                                <i class="fas fa-file-export mr-2"></i>Exporter
+                            </button>
+                            <button type="button" onclick="showDeleteModal('pers_admin', 'multiple')"
+                                id="deleteButtonPersAdmin"
+                                class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled>
+                                <i class="fas fa-trash-alt mr-2"></i>Supprimer
+                            </button>
                         </div>
                     </div>
 
+                    <!-- Titre de la liste -->
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h4 class="text-lg font-semibold text-gray-700 flex items-center">
+                            <i class="fas fa-list-ul mr-2 text-green-500"></i>
+                            Liste du personnel administratif
+                        </h4>
+                    </div>
 
-
-                    <section id="tab_pers_admin" class="flex flex-col space-y-8">
-                        <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-lg animate-fade-in-down" style="animation-delay: 0.1s;">
-                            <h2 class="text-3xl font-bold text-gray-900 flex items-center">
-                                <i class="fas fa-user-shield text-secondary mr-4 text-3xl"></i>
-                                Liste du Personnel Administratif
-                            </h2>
-                            <a href="?page=gestion_rh&tab=pers_admin&action=add"
-                                class="px-7 py-3 bg-primary text-white font-semibold rounded-full hover:bg-primary-dark transition-all duration-300 transform hover:scale-105 flex items-center shadow-lg">
-                                <i class="fas fa-user-plus mr-3"></i> Ajouter un Agent
-                            </a>
+                    <!-- Table de listing du personnel administratif -->
+                    <form class="bg-white shadow-md rounded-lg overflow-hidden mb-6" method="POST"
+                        action="?page=gestion_rh&tab=pers_admin">
+                        <input type="hidden" name="submit_delete_multiple" id="submitDeletePersHidden" value="0">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3 text-center">
+                                            <input type="checkbox" id="selectAllCheckbox"
+                                                class="form-checkbox h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer">
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Nom</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Prénom</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Email</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Téléphone</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Poste</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Date d'embauche</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <?php if (empty($personnel_admin)): ?>
+                                    <tr>
+                                        <td colspan="8" class="px-6 py-4 text-center text-gray-500">
+                                            Aucun personnel administratif trouvé
+                                        </td>
+                                    </tr>
+                                    <?php else: ?>
+                                    <?php foreach ($personnel_admin as $admin): ?>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-4 text-center">
+                                            <input type="checkbox" name="selected_ids[]"
+                                                value="<?= htmlspecialchars($admin->id_pers_admin) ?>"
+                                                class="form-checkbox h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            <?= htmlspecialchars($admin->nom_pers_admin) ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <?= htmlspecialchars($admin->prenom_pers_admin) ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <?= htmlspecialchars($admin->email_pers_admin) ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <?= htmlspecialchars($admin->tel_pers_admin) ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <?= htmlspecialchars($admin->poste) ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <?= htmlspecialchars($admin->date_embauche) ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <div class="flex space-x-2">
+                                                <a href="#"
+                                                    onclick="showModifyModal('pers_admin', <?= $admin->id_pers_admin ?>); return false;"
+                                                    class="text-indigo-600 hover:text-indigo-900">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
                         </div>
+                    </form>
 
-                        <div class="bg-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4 animate-fade-in-down" style="animation-delay: 0.2s;">
-                            <div class="relative w-full md:w-1/3">
-                                <input type="text" id="searchInput" placeholder="Rechercher par nom, email..."
-                                    class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                                    <i class="fas fa-search text-gray-400"></i>
-                                </span>
+                    <!-- Formulaire pour ajouter/modifier un personnel administratif -->
+                    <?php if ($action === 'add' || $action === 'edit'): ?>
+                    <div class="fixed inset-0 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50"
+                        id="modal-admin">
+                        <div class="relative mx-auto p-6 w-full max-w-2xl bg-white rounded-lg shadow-xl">
+                            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
+                                <h3 class="text-xl font-semibold text-green-600">
+                                    <?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? 'Modifier un membre du personnel' : 'Ajouter un membre du personnel' ?>
+                                </h3>
+                                <a href="?page=gestion_rh&tab=pers_admin"
+                                    class="text-gray-400 hover:text-gray-500 transition-colors duration-200">
+                                    <i class="fas fa-times text-xl"></i>
+                                </a>
                             </div>
-                            <div class="flex flex-wrap gap-3 justify-center md:justify-end">
-                                <button type="button" onclick="printTable('pers_admin')"
-                                    class="px-6 py-3 bg-blue-600 text-white font-medium rounded-full hover:bg-blue-700 transition-all duration-200 shadow-md flex items-center">
-                                    <i class="fas fa-print mr-3"></i> Imprimer
-                                </button>
-                                <button type="button" onclick="exportToExcel('pers_admin')"
-                                    class="px-6 py-3 bg-orange-600 text-white font-medium rounded-full hover:bg-orange-700 transition-all duration-200 shadow-md flex items-center">
-                                    <i class="fas fa-file-export mr-3"></i> Exporter
-                                </button>
-                                <button type="button" onclick="showDeleteModal('pers_admin')" id="deleteButtonPersAdmin"
-                                    class="px-6 py-3 bg-red-600 text-white font-medium rounded-full hover:bg-red-700 transition-all duration-200 shadow-md flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <i class="fas fa-trash-alt mr-3"></i> Supprimer
-                                </button>
-                            </div>
-                        </div>
 
-                        <div class="bg-white p-8 rounded-2xl shadow-lg overflow-hidden animate-fade-in-down" style="animation-delay: 0.3s;">
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y-2 divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th scope="col" class="px-5 py-3 text-center">
-                                                <input type="checkbox" id="selectAllCheckbox"
-                                                    class="form-checkbox h-5 w-5 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer">
-                                            </th>
-                                            <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                                Nom & Prénom</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                                Contact</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                                Poste</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                                Date d'Embauche</th>
-                                            <th scope="col" class="px-6 py-3 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                                Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-100">
-                                        <?php if (empty($personnel_admin)): ?>
-                                            <tr>
-                                                <td colspan="6" class="px-6 py-6 text-center text-gray-500 text-lg">
-                                                    <i class="fas fa-box-open mr-3"></i> Aucun personnel administratif trouvé.
-                                                </td>
-                                            </tr>
-                                        <?php else: ?>
-                                            <?php foreach ($personnel_admin as $admin): ?>
-                                                <tr class="hover:bg-gray-50 transition-colors duration-150">
-                                                    <td class="px-5 py-4 text-center">
-                                                        <input type="checkbox" name="selected_ids[]"
-                                                            value="<?= htmlspecialchars($admin->id_pers_admin) ?>"
-                                                            class="form-checkbox h-5 w-5 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer">
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
-                                                        <div class="text-base font-medium text-gray-900"><?= htmlspecialchars($admin->prenom_pers_admin) ?> <?= htmlspecialchars($admin->nom_pers_admin) ?></div>
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
-                                                        <div class="text-sm text-gray-600 flex items-center mb-1"><i class="fas fa-envelope mr-2 text-primary"></i><?= htmlspecialchars($admin->email_pers_admin) ?></div>
-                                                        <div class="text-sm text-gray-600 flex items-center"><i class="fas fa-phone mr-2 text-primary"></i><?= htmlspecialchars($admin->tel_pers_admin) ?></div>
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-base text-gray-700 font-medium">
-                                                        <?= htmlspecialchars($admin->poste) ?>
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-base text-gray-700">
-                                                        <?= htmlspecialchars($admin->date_embauche) ?>
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-center text-base">
-                                                        <button onclick="showModifyModal('pers_admin', <?= $admin->id_pers_admin ?>); return false;"
-                                                            class="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100 transition duration-200" title="Modifier">
-                                                            <i class="fas fa-edit"></i>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        <?php endif; ?>
-                                    </tbody>
-                                </table>
-                            </div>
+                            <form action="?page=gestion_rh&tab=pers_admin" method="POST" class="space-y-6">
+                                <?php if ($action === 'edit' && isset($pers_admin_a_modifier)): ?>
+                                <input type="hidden" name="id_pers_admin"
+                                    value="<?= htmlspecialchars($pers_admin_a_modifier->id_pers_admin) ?>">
+                                <?php endif; ?>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="nom"
+                                            class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                                        <input type="text" name="nom" id="nom" style="outline: none;"
+                                            value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->nom_pers_admin) : '' ?>"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            required>
+                                    </div>
+
+                                    <div>
+                                        <label for="prenom"
+                                            class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                                        <input type="text" name="prenom" id="prenom" style="outline: none;"
+                                            value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->prenom_pers_admin) : '' ?>"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            required>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="email"
+                                            class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                        <input type="email" name="email" id="email" style="outline: none;"
+                                            value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->email_pers_admin) : '' ?>"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            required>
+                                    </div>
+                                    <div>
+                                        <label for="telephone"
+                                            class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                                        <input type="tel" name="telephone" id="telephone" style="outline: none;"
+                                            value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->tel_pers_admin) : '' ?>"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            required>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="poste"
+                                            class="block text-sm font-medium text-gray-700 mb-2">Poste</label>
+                                        <input type="text" name="poste" id="poste" style="outline: none;"
+                                            value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->poste) : '' ?>"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            required>
+                                    </div>
+                                    <div>
+                                        <label for="date_embauche"
+                                            class="block text-sm font-medium text-gray-700 mb-2">Date
+                                            d'embauche</label>
+                                        <input type="date" name="date_embauche" id="date_embauche"
+                                            style="outline: none;"
+                                            value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->date_embauche) : '' ?>"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            required>
+                                    </div>
+                                </div>
+
+
+                                <div class="flex justify-between space-x-4 pt-6 border-t border-gray-200">
+                                    <a href="?page=gestion_rh&tab=pers_admin"
+                                        class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors duration-200">
+                                        Annuler
+                                    </a>
+                                    <button type="submit"
+                                        name="<?= ($action === 'edit') ? 'btn_modifier_pers_admin' : 'btn_add_pers_admin' ?>"
+                                        class="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200">
+                                        <?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? 'Modifier' : 'Enregistrer' ?>
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-                    </section>
+                    </div>
+                    <?php endif; ?>
+                </div>
                 <?php endif; ?>
 
+                <!-- Onglet Enseignants -->
                 <?php if ($activeTab === 'enseignant'): ?>
                     <!-- STAT CARDS -->
                     <div class="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-8 -mt-25 mb-12 px-2">
@@ -380,340 +485,305 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                             <div class="text-blue-700 mt-1">Total Enseignants</div>
                         </div>
                     </div>
-                    <section id="tab_enseignant" class="flex flex-col space-y-8">
-                        <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-lg animate-fade-in-down" style="animation-delay: 0.1s;">
-                            <h2 class="text-3xl font-bold text-gray-900 flex items-center">
-                                <i class="fas fa-user-graduate text-secondary mr-4 text-3xl"></i>
-                                Liste des Enseignants
-                            </h2>
-                            <a href="?page=gestion_rh&tab=enseignant&action=add"
-                                class="px-7 py-3 bg-primary text-white font-semibold rounded-full hover:bg-primary-dark transition-all duration-300 transform hover:scale-105 flex items-center shadow-lg">
-                                <i class="fas fa-user-plus mr-3"></i> Ajouter un Enseignant
-                            </a>
-                        </div>
-
-                        <div class="bg-white p-6 rounded-2xl shadow-lg flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4 animate-fade-in-down" style="animation-delay: 0.2s;">
-                            <div class="relative w-full md:w-1/3">
-                                <input type="text" id="searchInputEnseignant" placeholder="Rechercher par nom, spécialité..."
-                                    class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                                    <i class="fas fa-search text-gray-400"></i>
-                                </span>
-                            </div>
-                            <div class="flex flex-wrap gap-3 justify-center md:justify-end">
-                                <button type="button" onclick="printTable('enseignant')"
-                                    class="px-6 py-3 bg-blue-600 text-white font-medium rounded-full hover:bg-blue-700 transition-all duration-200 shadow-md flex items-center">
-                                    <i class="fas fa-print mr-3"></i> Imprimer
-                                </button>
-                                <button type="button" onclick="exportToExcel('enseignant')"
-                                    class="px-6 py-3 bg-orange-600 text-white font-medium rounded-full hover:bg-orange-700 transition-all duration-200 shadow-md flex items-center">
-                                    <i class="fas fa-file-export mr-3"></i> Exporter
-                                </button>
-                                <button type="button" onclick="showDeleteModal('enseignant')" id="deleteButtonEnseignant"
-                                    class="px-6 py-3 bg-red-600 text-white font-medium rounded-full hover:bg-red-700 transition-all duration-200 shadow-md flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <i class="fas fa-trash-alt mr-3"></i> Supprimer
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="bg-white p-8 rounded-2xl shadow-lg overflow-hidden animate-fade-in-down" style="animation-delay: 0.3s;">
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y-2 divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th scope="col" class="px-5 py-3 text-center">
-                                                <input type="checkbox" id="selectAllCheckboxEnseignant"
-                                                    class="form-checkbox h-5 w-5 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer">
-                                            </th>
-                                            <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                                Nom & Prénom</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                                Contact</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                                Spécialité</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                                Fonction & Date</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                                Grade & Date</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                                Type d'Enseignant</th>
-                                            <th scope="col" class="px-6 py-3 text-center text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                                Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-100">
-                                        <?php if (empty($enseignants)): ?>
-                                            <tr>
-                                                <td colspan="8" class="px-6 py-6 text-center text-gray-500 text-lg">
-                                                    <i class="fas fa-box-open mr-3"></i> Aucun enseignant trouvé.
-                                                </td>
-                                            </tr>
-                                        <?php else: ?>
-                                            <?php foreach ($enseignants as $enseignant): ?>
-                                                <tr class="hover:bg-gray-50 transition-colors duration-150">
-                                                    <td class="px-5 py-4 text-center">
-                                                        <input type="checkbox" name="selected_ids[]"
-                                                            value="<?= htmlspecialchars($enseignant->id_enseignant) ?>"
-                                                            class="user-checkbox form-checkbox h-5 w-5 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer">
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
-                                                        <div class="text-base font-medium text-gray-900"><?= htmlspecialchars($enseignant->prenom_enseignant) ?> <?= htmlspecialchars($enseignant->nom_enseignant) ?></div>
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
-                                                        <div class="text-sm text-gray-600 flex items-center"><i class="fas fa-envelope mr-2 text-primary"></i><?= htmlspecialchars($enseignant->mail_enseignant) ?></div>
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-base text-gray-700 font-medium">
-                                                        <?= htmlspecialchars($enseignant->lib_specialite) ?>
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
-                                                        <div class="text-base text-gray-700 font-medium"><?= htmlspecialchars($enseignant->lib_fonction) ?></div>
-                                                        <div class="text-sm text-gray-500"><?= htmlspecialchars($enseignant->date_occupation) ?></div>
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
-                                                        <div class="text-base text-gray-700 font-medium"><?= htmlspecialchars($enseignant->lib_grade) ?></div>
-                                                        <div class="text-sm text-gray-500"><?= htmlspecialchars($enseignant->date_grade) ?></div>
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
-                                                        <span class="px-3 py-1 rounded-full text-xs font-semibold
-                                                <?= ($enseignant->type_enseignant === 'Administratif') ? 'bg-accent/10 text-accent' : 'bg-blue-100 text-blue-800' ?>">
-                                                            <?= htmlspecialchars($enseignant->type_enseignant) ?>
-                                                        </span>
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-center text-base">
-                                                        <button onclick="showModifyModal('enseignant', <?= $enseignant->id_enseignant ?>); return false;"
-                                                            class="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100 transition duration-200" title="Modifier">
-                                                            <i class="fas fa-edit"></i>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        <?php endif; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </section>
-                <?php endif; ?>
-            </div>
-        </main>
-    </div>
-
-    <?php if ($action === 'add' || ($action === 'edit' && $activeTab === 'pers_admin')): ?>
-        <div class="modal-overlay" id="modal-admin" style="display: flex;">
-            <div class="modal-container">
-                <button type="button" class="modal-close-btn" onclick="window.location.href='?page=gestion_rh&tab=pers_admin'">
-                    <i class="fas fa-times"></i>
-                </button>
-                <h3 class="text-3xl font-bold text-primary mb-8 border-b-2 pb-4 border-primary/20 flex items-center">
-                    <i class="fas fa-user-plus mr-4 text-3xl"></i>
-                    <?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? 'Modifier le Personnel Administratif' : 'Ajouter un Nouveau Personnel' ?>
-                </h3>
-
-                <form action="?page=gestion_rh&tab=pers_admin" method="POST" class="space-y-6">
-                    <?php if ($action === 'edit' && isset($pers_admin_a_modifier)): ?>
-                        <input type="hidden" name="id_pers_admin" value="<?= htmlspecialchars($pers_admin_a_modifier->id_pers_admin) ?>">
                     <?php endif; ?>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="nom" class="block text-sm font-semibold text-gray-700 mb-2">Nom</label>
-                            <input type="text" name="nom" id="nom"
-                                value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->nom_pers_admin) : '' ?>"
-                                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base"
-                                required>
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-semibold text-gray-700">Gestion des enseignants</h3>
+                        <a href="?page=gestion_rh&tab=enseignant&action=add" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-sm
+                                  transition duration-150 ease-in-out flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Ajouter un enseignant
+                        </a>
+                    </div>
+
+                    <!-- Action Bar for Table -->
+                    <div
+                        class="px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-gray-200">
+                        <div class="relative w-full sm:w-1/2 lg:w-1/3 mb-4 sm:mb-0">
+                            <input type="text" id="searchInputEnseignant" placeholder="Rechercher un enseignant..."
+                                class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </span>
                         </div>
-                        <div>
-                            <label for="prenom" class="block text-sm font-semibold text-gray-700 mb-2">Prénom</label>
-                            <input type="text" name="prenom" id="prenom"
-                                value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->prenom_pers_admin) : '' ?>"
-                                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base"
-                                required>
+                        <div class="flex flex-wrap gap-2 justify-center sm:justify-end">
+                            <button type="button" onclick="printTable('enseignant')"
+                                class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                                <i class="fas fa-print mr-2"></i>Imprimer
+                            </button>
+                            <button type="button" onclick="exportToExcel('enseignant')"
+                                class="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50">
+                                <i class="fas fa-file-export mr-2"></i>Exporter
+                            </button>
+                            <button type="button" onclick="showDeleteModal('enseignant')" id="deleteButtonEnseignant"
+                                class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg shadow transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled>
+                                <i class="fas fa-trash-alt mr-2"></i>Supprimer
+                            </button>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                            <input type="email" name="email" id="email"
-                                value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->email_pers_admin) : '' ?>"
-                                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base"
-                                required>
-                        </div>
-                        <div>
-                            <label for="telephone" class="block text-sm font-semibold text-gray-700 mb-2">Téléphone</label>
-                            <input type="tel" name="telephone" id="telephone"
-                                value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->tel_pers_admin) : '' ?>"
-                                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base"
-                                required>
-                        </div>
+                    <!-- Titre de la liste -->
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h4 class="text-lg font-semibold text-gray-700 flex items-center">
+                            <i class="fas fa-chalkboard-teacher mr-2 text-green-500"></i>
+                            Liste des enseignants
+                        </h4>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="poste" class="block text-sm font-semibold text-gray-700 mb-2">Poste</label>
-                            <input type="text" name="poste" id="poste"
-                                value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->poste) : '' ?>"
-                                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base"
-                                required>
-                        </div>
-                        <div>
-                            <label for="date_embauche" class="block text-sm font-semibold text-gray-700 mb-2">Date d'embauche</label>
-                            <input type="date" name="date_embauche" id="date_embauche"
-                                value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->date_embauche) : '' ?>"
-                                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base"
-                                required>
-                        </div>
-                    </div>
+                    <!-- Table de listing des enseignants -->
+                    <form class="bg-white shadow-md rounded-lg overflow-hidden mb-6" method="post"
+                        action="?page=gestion_rh&tab=enseignant">
+                        <input type="hidden" name="submit_delete_multiple" id="submitDeleteHidden" value="0">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3 text-center">
+                                            <input type="checkbox" id="selectAllCheckboxEnseignant"
+                                                class="form-checkbox h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer">
+                                        </th>
 
-                    <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-                        <button type="button" onclick="window.location.href='?page=gestion_rh&tab=pers_admin'"
-                            class="px-8 py-3 bg-gray-200 text-gray-800 font-bold rounded-full hover:bg-gray-300 transition-colors duration-200 shadow-md">
-                            Annuler
-                        </button>
-                        <button type="submit"
-                            name="<?= ($action === 'edit') ? 'btn_modifier_pers_admin' : 'btn_add_pers_admin' ?>"
-                            class="px-8 py-3 bg-primary text-white font-bold rounded-full hover:bg-primary-dark transition-colors duration-200 shadow-md">
-                            <?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? 'Modifier' : 'Enregistrer' ?>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    <?php endif; ?>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Nom & Prénom</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Email</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Spécialité</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Fonction</th>
 
-    <?php if ($action === 'add' || ($action === 'edit' && $activeTab === 'enseignant')): ?>
-        <div class="modal-overlay" id="modal-enseignant" style="display: flex;">
-            <div class="modal-container">
-                <button type="button" class="modal-close-btn" onclick="window.location.href='?page=gestion_rh&tab=enseignant'">
-                    <i class="fas fa-times"></i>
-                </button>
-                <h3 class="text-3xl font-bold text-primary mb-8 border-b-2 pb-4 border-primary/20 flex items-center">
-                    <i class="fas fa-user-plus mr-4 text-3xl"></i>
-                    <?= ($action === 'edit' && isset($enseignant_a_modifier)) ? 'Modifier l\'Enseignant' : 'Ajouter un Nouvel Enseignant' ?>
-                </h3>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Grade</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Date grade</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <?php if (empty($enseignants)): ?>
+                                    <tr>
+                                        <td colspan="11" class="px-6 py-4 text-center text-gray-500">
+                                            Aucun enseignant trouvé
+                                        </td>
+                                    </tr>
+                                    <?php else: ?>
+                                    <?php foreach ($enseignants as $enseignant): ?>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-4 text-center">
+                                            <input type="checkbox" name="selected_ids[]"
+                                                value="<?= htmlspecialchars($enseignant->id_enseignant) ?>"
+                                                class="user-checkbox form-checkbox h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer">
+                                        </td>
+
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            <?= htmlspecialchars($enseignant->nom_enseignant) ?>
+                                            <?= htmlspecialchars($enseignant->prenom_enseignant) ?>
+                                        </td>
+
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <?= htmlspecialchars($enseignant->mail_enseignant) ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <?= htmlspecialchars($enseignant->lib_specialite) ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <?= htmlspecialchars($enseignant->lib_fonction) ?>
+                                        </td>
+
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <?= htmlspecialchars($enseignant->lib_grade) ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <?= htmlspecialchars($enseignant->date_grade) ?>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            <div class="flex space-x-2">
+                                                <a href="#"
+                                                    onclick="showModifyModal('enseignant', <?= $enseignant->id_enseignant ?>); return false;"
+                                                    class="text-indigo-600 hover:text-indigo-900">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+
+                    <!-- Formulaire pour ajouter/modifier un enseignant -->
+                    <?php if ($action === 'add' || $action === 'edit'): ?>
+                    <div class="fixed inset-0  bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50"
+                        id="modal-enseignant">
+                        <div class="relative mx-auto p-6 w-full max-w-2xl bg-white rounded-lg shadow-xl">
+                            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
+                                <h3 class="text-xl font-semibold text-green-600">
+                                    <?= ($action === 'edit' && isset($enseignant_a_modifier)) ? 'Modifier un enseignant' : 'Ajouter un enseignant' ?>
+                                </h3>
+                                <a href="?page=gestion_rh&tab=enseignant"
+                                    class="text-gray-400 hover:text-gray-500 transition-colors duration-200">
+                                    <i class="fas fa-times text-xl"></i>
+                                </a>
+                            </div>
 
                 <form action="?page=gestion_rh&tab=enseignant" method="POST" class="space-y-6">
                     <?php if ($action === 'edit' && isset($enseignant_a_modifier)): ?>
                         <input type="hidden" name="id_enseignant" value="<?= htmlspecialchars($enseignant_a_modifier->id_enseignant) ?>">
                     <?php endif; ?>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="nom_enseignant" class="block text-sm font-semibold text-gray-700 mb-2">Nom</label>
-                            <input type="text" name="nom" id="nom_enseignant"
-                                value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->nom_enseignant) : '' ?>"
-                                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base"
-                                required>
-                        </div>
-                        <div>
-                            <label for="prenom_enseignant" class="block text-sm font-semibold text-gray-700 mb-2">Prénom</label>
-                            <input type="text" name="prenom" id="prenom_enseignant"
-                                value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->prenom_enseignant) : '' ?>"
-                                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base"
-                                required>
-                        </div>
-                    </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="nom_enseignant"
+                                            class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                                        <input type="text" name="nom" id="nom_enseignant" style="outline: none;"
+                                            value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->nom_enseignant) : '' ?>"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            required>
+                                    </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="email_enseignant" class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                            <input type="email" name="email" id="email_enseignant"
-                                value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->mail_enseignant) : '' ?>"
-                                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base"
-                                required>
-                        </div>
-                        <div>
-                            <label for="specialite" class="block text-sm font-semibold text-gray-700 mb-2">Spécialité</label>
-                            <select name="id_specialite" id="specialite" required
-                                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base">
-                                <?php foreach ($listeSpecialites as $specialite): ?>
-                                    <option value="<?= htmlspecialchars($specialite->id_specialite) ?>"
-                                        <?= ($action === 'edit' && isset($enseignant_a_modifier) && $enseignant_a_modifier->id_specialite == $specialite->id_specialite) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($specialite->lib_specialite) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="fonction" class="block text-sm font-semibold text-gray-700 mb-2">Fonction</label>
-                            <select name="id_fonction" id="fonction" required
-                                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base">
-                                <?php foreach ($listeFonctions as $fonction): ?>
-                                    <option value="<?= htmlspecialchars($fonction->id_fonction) ?>"
-                                        <?= ($action === 'edit' && isset($enseignant_a_modifier) && $enseignant_a_modifier->id_fonction == $fonction->id_fonction) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($fonction->lib_fonction) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="date_fonction" class="block text-sm font-semibold text-gray-700 mb-2">Date d'Occupation Fonction</label>
-                            <input type="date" name="date_fonction" id="date_fonction"
-                                value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->date_occupation) : '' ?>"
-                                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base"
-                                required>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="grade" class="block text-sm font-semibold text-gray-700 mb-2">Grade</label>
-                            <select name="id_grade" id="grade" required
-                                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base">
-                                <?php foreach ($listeGrades as $grade): ?>
-                                    <option value="<?= htmlspecialchars($grade->id_grade) ?>"
-                                        <?= ($action === 'edit' && isset($enseignant_a_modifier) && $enseignant_a_modifier->id_grade == $grade->id_grade) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($grade->lib_grade) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="date_grade" class="block text-sm font-semibold text-gray-700 mb-2">Date d'Obtention Grade</label>
-                            <input type="date" name="date_grade" id="date_grade"
-                                value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->date_grade) : '' ?>"
-                                class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent transition-all duration-200 text-base"
-                                required>
-                        </div>
-                    </div>
-                    <div>
-                        <label for="type_enseignant" class="block text-sm font-semibold text-gray-700 mb-2">Type d'Enseignant</label>
-                        <select name="type_enseignant" id="type_enseignant" required
-                            class="w-full px-5 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-200 text-base">
-                            <option value="Simple"
-                                <?php echo ($enseignant_a_modifier && $enseignant_a_modifier->type_enseignant === 'Simple') ? 'selected' : ''; ?>>
-                                Simple</option>
-                            <option value="Administratif"
-                                <?php echo ($enseignant_a_modifier && $enseignant_a_modifier->type_enseignant === 'Administratif') ? 'selected' : ''; ?>>
-                                Administratif</option>
-                        </select>
-                    </div>
+                                    <div>
+                                        <label for="prenom_enseignant"
+                                            class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                                        <input type="text" name="prenom" id="prenom_enseignant" style="outline: none;"
+                                            value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->prenom_enseignant) : '' ?>"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            required>
+                                    </div>
+                                </div>
 
-                    <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-                        <button type="button" onclick="window.location.href='?page=gestion_rh&tab=enseignant'"
-                            class="px-8 py-3 bg-gray-200 text-gray-800 font-bold rounded-full hover:bg-gray-300 transition-colors duration-200 shadow-md">
-                            Annuler
-                        </button>
-                        <button type="submit"
-                            name="<?= ($action === 'edit') ? 'btn_modifier_enseignant' : 'btn_add_enseignant' ?>"
-                            class="px-8 py-3 bg-primary text-white font-bold rounded-full hover:bg-primary-dark transition-colors duration-200 shadow-md">
-                            <?= ($action === 'edit' && isset($enseignant_a_modifier)) ? 'Modifier' : 'Ajouter' ?>
-                        </button>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="email_enseignant"
+                                            class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                        <input type="email" name="email" id="email_enseignant" style="outline: none;"
+                                            value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->mail_enseignant) : '' ?>"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            required>
+                                    </div>
+
+                                    <div>
+                                        <label for="specialite"
+                                            class="block text-sm font-medium text-gray-700 mb-2">Spécialité</label>
+                                        <select name="id_specialite" id="specialite" style="outline: none;" required
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
+                                            <?php foreach ($listeSpecialites as $specialite): ?>
+                                            <option value="<?= htmlspecialchars($specialite->id_specialite) ?>"
+                                                <?= ($action === 'edit' && isset($enseignant_a_modifier) && $enseignant_a_modifier->id_specialite == $specialite->id_specialite) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($specialite->lib_specialite) ?>
+                                            </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="fonction"
+                                            class="block text-sm font-medium text-gray-700 mb-2">Fonction</label>
+                                        <select name="id_fonction" id="fonction" style="outline: none;" required
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
+                                            <?php foreach ($listeFonctions as $fonction): ?>
+                                            <option value="<?= htmlspecialchars($fonction->id_fonction) ?>"
+                                                <?= ($action === 'edit' && isset($enseignant_a_modifier) && $enseignant_a_modifier->id_fonction == $fonction->id_fonction) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($fonction->lib_fonction) ?>
+                                            </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="date_fonction"
+                                            class="block text-sm font-medium text-gray-700 mb-2">Date
+                                            d'occupation de la
+                                            fonction</label>
+                                        <input type="date" name="date_fonction" id="date_fonction"
+                                            style="outline: none;"
+                                            value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->date_occupation) : '' ?>"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="grade"
+                                            class="block text-sm font-medium text-gray-700 mb-2">Grade</label>
+                                        <select name="id_grade" id="grade" style="outline: none;" required
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
+                                            <?php foreach ($listeGrades as $grade): ?>
+                                            <option value="<?= htmlspecialchars($grade->id_grade) ?>"
+                                                <?= ($action === 'edit' && isset($enseignant_a_modifier) && $enseignant_a_modifier->id_grade == $grade->id_grade) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($grade->lib_grade) ?>
+                                            </option>
+                                            <?php endforeach; ?>
+                                        </select>
+
+                                    </div>
+
+                                    <div>
+                                        <label for="date_grade"
+                                            class="block text-sm font-medium text-gray-700 mb-2">Date
+                                            d'obtention du
+                                            grade</label>
+                                        <input type="date" name="date_grade" id="date_grade" style="outline: none;"
+                                            value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->date_grade) : '' ?>"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="space-y-2">
+                                        <label for="type_enseignant" class="block text-sm font-medium text-gray-700">
+                                            Type d'enseignant
+                                        </label>
+                                        <select name="type_enseignant" id="type_enseignant" required
+                                            class="focus:outline-none w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white transition-all duration-200">
+                                            <option value="Simple"
+                                                <?php echo ($enseignant_a_modifier && $enseignant_a_modifier->type_enseignant) ? 'selected' : ''; ?>>
+                                                Simple</option>
+                                            <option value="Administratif"
+                                                <?php echo ($enseignant_a_modifier && !$enseignant_a_modifier->type_enseignant) ? 'selected' : ''; ?>>
+                                                Administratif</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <div class="flex justify-between space-x-4 pt-6 border-t border-gray-200">
+                                    <a href="?page=gestion_rh&tab=enseignant"
+                                        class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors duration-200">
+                                        Annuler
+                                    </a>
+                                    <button type="submit"
+                                        name="<?= ($action === 'edit') ? 'btn_modifier_enseignant' : 'btn_add_enseignant' ?>"
+                                        class="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200">
+                                        <?= ($action === 'edit' && isset($enseignant_a_modifier)) ? 'Modifier' : 'Ajouter' ?>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </form>
+                    <?php endif; ?>
+                </div>
+                
             </div>
-        </div>
-    <?php endif; ?>
+        </main>
+    </div>
 
-    <div id="deleteModal" class="modal-overlay">
-        <div class="modal-container">
-            <button type="button" class="modal-close-btn" id="cancelDelete">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="text-center p-4">
-                <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-red-100 mb-6">
-                    <i class="fas fa-exclamation-triangle text-red-600 text-4xl"></i>
+    <!-- Modale de confirmation de suppression -->
+    <div id="deleteModal"
+        class="fixed inset-0 flex items-center justify-center z-50 hidden animate__animated animate__fadeIn">
+        <div class="bg-white rounded-lg p-6 max-w-sm w-full mx-4 animate__animated animate__zoomIn">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
                 </div>
                 <h3 class="text-3xl font-bold text-gray-900 mb-4">Confirmation de Suppression</h3>
                 <p class="text-lg text-gray-600 mb-8">
@@ -835,10 +905,12 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
         deleteModal.style.display = 'flex';
     }
 
-    // Gestion de la suppression confirmée
-    if (confirmDelete) {
-        confirmDelete.addEventListener('click', function() {
-            const form = currentDeleteType === 'pers_admin' ? formListePersAdmin : formListeEnseignant;
+// Gestion de la suppression
+if (confirmDelete) {
+    confirmDelete.addEventListener('click', function() {
+        const activeTab = document.querySelector('.tab-button.border-green-500').getAttribute('href').split(
+            'tab=')[1];
+        const form = activeTab === 'pers_admin' ? formListePersAdmin : formListeEnseignant;
 
             if (form) {
                 // Ensure the correct hidden input for submission is used
