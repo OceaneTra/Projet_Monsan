@@ -145,7 +145,7 @@
         <div class="absolute -top-40 -right-40 w-96 h-96 bg-primary rounded-full opacity-20 animate-pulse-slow">
         </div>
         <div class="absolute top-20 left-20 w-8 h-8 bg-primary rounded-full animate-float"></div>
-        <div class="absolute top-40 right-32 w-6 h-6 bg-black rounded-full animate-float-delayed"></div>
+        <div class="absolute top-40 right-32 w-6 h-6 bg-accent rounded-full animate-float-delayed"></div>
         <div class="absolute bottom-32 left-16 geometric-shape">
             <div class="w-12 h-12 border-3 border-accent transform rotate-45"></div>
         </div>
@@ -181,9 +181,9 @@
                                 <!-- Lock icon on envelope -->
                                 <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                                     <div class="w-8 h-8 bg-accent-400 rounded-full flex items-center justify-center">
-                                        <div class="w-4 h-4 bg-black rounded-sm relative">
+                                        <div class="w-4 h-4 bg-primary rounded-sm relative">
                                             <div
-                                                class="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 border-2 border-black rounded-full bg-transparent">
+                                                class="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 border-2 border-primary rounded-full bg-transparent">
                                             </div>
                                         </div>
                                     </div>
@@ -226,14 +226,14 @@
                         <!-- Header -->
                         <div class="text-center mb-8">
                             <div
-                                class="w-16 h-16 bg-yellow-400 rounded-full mx-auto mb-4 flex items-center justify-center">
-                                <svg class="w-8 h-8 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="w-16 h-16 bg-primary rounded-full mx-auto mb-4 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 15v2m0 0v2m0-2h2m-2 0h-2m8-6V9a8 8 0 10-16 0v2m16 0a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6a2 2 0 012-2h12z">
                                     </path>
                                 </svg>
                             </div>
-                            <h1 class="text-3xl font-bold mb-2">Mot de Passe Oublié ?</h1>
+                            <h1 class="text-3xl font-bold mb-2 text-primary ">Mot de Passe Oublié ?</h1>
                             <p class="text-gray-600">Pas de problème ! Entrez votre email et nous vous enverrons un lien
                                 de réinitialisation.</p>
                         </div>
@@ -250,7 +250,7 @@
 
                             <!-- Submit Button -->
                             <button type="submit"
-                                class="w-full bg-primary text-black py-4 rounded-xl font-semibold hover:bg-yellow-500 transition-all duration-300 hover:scale-105 transform hover:shadow-lg">
+                                class="w-full bg-primary text-white py-4 rounded-xl font-semibold hover:bg-green-700 transition-all duration-300 hover:scale-105 transform hover:shadow-lg">
                                 Envoyer le Lien de Réinitialisation
                             </button>
                         </form>

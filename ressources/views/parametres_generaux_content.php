@@ -3,13 +3,13 @@
         <?php foreach ($cardPGeneraux as $card): ?>
         <div class="relative bg-white rounded-3xl shadow-xl flex flex-col h-full transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-2 border border-gray-100 p-4 min-h-[220px]">
             <!-- Badge flottant pour l'icône/image -->
-            <?php if (!empty($card['icon'])): ?>
+                    <?php if (!empty($card['icon'])): ?>
             <div class="absolute -top-5 left-1/2 -translate-x-1/2 z-10">
                 <div class="bg-yellow-400 shadow-lg w-12 h-12 flex items-center justify-center rounded-full border-4 border-white overflow-hidden">
                     <img src="<?php echo htmlspecialchars($card['icon']); ?>" alt="icone" class="object-cover w-full h-full rounded-full">
                 </div>
-            </div>
-            <?php endif; ?>
+                    </div>
+                    <?php endif; ?>
             <div class="flex flex-col h-full pt-8">
                 <a href="<?php echo htmlspecialchars($card['link']); ?>" class="group flex-grow block text-center">
                     <h5 class="mb-1 text-base font-extrabold text-gray-900 group-hover:text-yellow-600 transition-colors">

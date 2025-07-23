@@ -532,7 +532,7 @@ if (!isset($_SESSION['id_utilisateur'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduX | <?php echo htmlspecialchars($currentPageLabel); ?></title>
+    <title>UniValid | <?php echo htmlspecialchars($currentPageLabel); ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="shortcut icon" href="./images/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -541,8 +541,11 @@ if (!isset($_SESSION['id_utilisateur'])) {
         theme: {
             extend: {
                 colors: {
-                    'yellow-custom': '#FFD700',
-                    'yellow-bright': '#FFEB3B'
+                    'primary-blue': '#2563eb',
+                    'accent-green': '##2BA065',
+                    'sidebar-blue': '#C4D4F2',
+                    'header-blue': '#C4D4F2',
+                    'soft-gray': '#f7fafc',
                 },
                 animation: {
                     'float': 'float 3s ease-in-out infinite',
@@ -568,29 +571,37 @@ if (!isset($_SESSION['id_utilisateur'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
 </head>
 
-<body class="bg-gray-50 font-sans antialiased">
-    <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-white overflow-hidden">
+<body
+    class="min-h-screen bg-gradient-to-br from-soft-gray via-white to-sidebar-blue font-sans antialiased relative overflow-x-hidden">
+    <!-- Cercles décoratifs flottants -->
+    <div
+        class="pointer-events-none fixed -top-32 -left-32 w-96 h-96 bg-primary-blue rounded-full opacity-10 z-0 animate-float">
+    </div>
+    <div
+        class="pointer-events-none fixed bottom-0 right-0 w-80 h-80 bg-accent-green rounded-full opacity-10 z-0 animate-float">
+    </div>
+    <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-transparent overflow-hidden relative z-10">
         <!-- Sidebar -->
         <div x-show="sidebarOpen" @click.away="sidebarOpen = false" class="fixed inset-0 z-40 flex md:hidden">
             <div class="fixed inset-0 bg-gray-600 bg-opacity-75"></div>
-            <div class="relative flex-1 flex flex-col max-w-xs w-full bg-white rounded-r-3xl shadow-xl p-4">
+            <div class="relative flex-1 flex flex-col max-w-xs w-full bg-sidebar-blue rounded-r-3xl shadow-xl p-4">
                 <div class="absolute top-0 right-0 -mr-12 pt-2">
                     <button @click="sidebarOpen = false"
                         class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                         <span class="sr-only">Close sidebar</span>
-                        <i class="fas fa-times text-white"></i>
+                        <i class="fas fa-times text-primary-blue"></i>
                     </button>
                 </div>
                 <!-- Sidebar content for mobile -->
-                <div class="flex items-center justify-center h-20 mb-6">
+                <div class="flex items-center justify-center h-20 mb-6 opacity-45">
                     <img src="./images/logo.png" height="80" width="80" alt="Logo" class="rounded-full shadow-md">
                 </div>
                 <div class="flex-1 h-0 pb-4 overflow-y-auto">
-                    <nav class="space-y-3">
+                    <nav class="space-y-1">
                         <?php echo $menuHTML; ?>
                         <form action="logout.php" method="POST" class="w-full mt-4">
                             <button type="submit"
-                                class="w-full flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-full text-white bg-black hover:bg-yellow-custom hover:text-black transition-all duration-200 shadow">
+                                class="w-full flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-full text-white bg-primary-blue hover:bg-accent-green hover:text-white transition-all duration-200 shadow">
                                 <i class="fas fa-power-off mr-2"></i> Déconnexion
                             </button>
                         </form>
@@ -599,10 +610,10 @@ if (!isset($_SESSION['id_utilisateur'])) {
             </div>
         </div>
         <!-- Static sidebar for desktop -->
-        <div class="hidden md:flex md:flex-shrink-0">
-            <div class="flex flex-col w-64 h-full bg-white rounded-3xl shadow-xl m-4 p-4">
+        <div class="hidden md:flex md:flex-shrink-0 min-h-screen">
+            <div class="flex flex-col w-64 h-full bg-sidebar-blue rounded-3xl shadow-xl m-4 p-4">
                 <div class="flex items-center justify-center h-20 mb-6">
-                    <img src="./images/logo.png" height="80" width="80" alt="Logo" class="rounded-full shadow-md">
+                    <img src="./images/logo.png" height="100" width="100" alt="Logo">
                 </div>
                 <div class="flex flex-col flex-grow overflow-y-auto">
                     <nav class="space-y-3">
@@ -612,7 +623,7 @@ if (!isset($_SESSION['id_utilisateur'])) {
                 <div class="mt-6">
                     <form action="logout.php" method="POST" id="logoutFormDesktop" class="w-full">
                         <button type="submit" form="logoutFormDesktop"
-                            class="w-full flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-full text-white bg-black hover:bg-yellow-custom hover:text-black transition-all duration-200 shadow">
+                            class="w-full flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-full text-white bg-primary-blue hover:bg-accent-green hover:text-white transition-all duration-200 shadow">
                             <i class="fas fa-power-off mr-2"></i> Déconnexion
                         </button>
                     </form>
@@ -623,31 +634,29 @@ if (!isset($_SESSION['id_utilisateur'])) {
         <div class="flex flex-col flex-1 w-0 overflow-hidden">
             <!-- Top navigation -->
             <div
-                class="relative z-10 flex-shrink-0 flex h-20 bg-white shadow-xl rounded-b-3xl m-4 mx-4 items-center px-8">
+                class="relative z-10 flex-shrink-0 flex h-20 bg-header-blue shadow-xl rounded-3xl m-4 mx-4 items-center px-8">
                 <button @click.stop="sidebarOpen = true"
-                    class="px-4 border-r border-gray-200 text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-yellow-500 md:hidden">
+                    class="px-4 border-r border-gray-200 text-primary-blue focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent-green md:hidden">
                     <span class="sr-only">Open sidebar</span>
                     <i class="fas fa-bars"></i>
                 </button>
                 <div class="flex items-center space-x-4 flex-1">
-                    <img src="./images/logo.png" alt="Logo" class="h-12 w-12 rounded-full shadow-md hidden md:block">
-                    <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">
-                        <?php echo htmlspecialchars($currentPageLabel); ?></h1>
+                    <img src="./images/logo.png" alt="Logo" class="w-20 rounded-full hidden md:block">
                 </div>
                 <div class="flex items-center space-x-6">
                     <div class="text-right">
-                        <p class="text-md font-semibold text-gray-800">Bienvenue,
+                        <p class="text-md font-semibold text-primary-blue">Bienvenue,
                             <?php echo htmlspecialchars($_SESSION['nom_utilisateur']) ?></p>
-                        <p class="text-xs text-gray-500"><?php echo htmlspecialchars($_SESSION['lib_GU']) ?></p>
+                        <p class="text-xs text-accent-green"><?php echo htmlspecialchars($_SESSION['lib_GU']) ?></p>
                     </div>
                     <div
-                        class="flex items-center justify-center w-12 h-12 rounded-full bg-yellow-400 text-black font-bold text-lg shadow-md">
+                        class="flex items-center justify-center w-12 h-12 rounded-full bg-primary-blue text-white font-bold text-lg shadow-md">
                         <i class="fas fa-user"></i>
                     </div>
                 </div>
             </div>
             <!-- Main content area -->
-            <main class="flex-1 relative overflow-y-auto focus:outline-none p-6 bg-gray-50">
+            <main class="flex-1 relative overflow-y-auto focus:outline-none p-6 bg-soft-gray">
                 <?php
                 if (!empty($contentFile) && file_exists($contentFile)) {
                     include $contentFile;

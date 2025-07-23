@@ -313,7 +313,7 @@
 
                         <!-- Login Button -->
                         <button type="submit"
-                            class="w-full bg-primary text-white py-4 rounded-xl font-semibold hover:bg-primary-dark transition-all duration-300 hover:scale-105 transform hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-primary/20">
+                            class="w-full bg-primary text-white py-4 rounded-xl font-semibold hover:bg-primary transition-all duration-300 hover:scale-105 transform hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-primary/20">
                             Se Connecter
                         </button>
                     </form>
