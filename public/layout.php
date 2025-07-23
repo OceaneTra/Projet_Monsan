@@ -599,7 +599,7 @@ if (!isset($_SESSION['id_utilisateur'])) {
                 <div class="flex-1 h-0 pb-4 overflow-y-auto">
                     <nav class="space-y-1">
                         <?php echo $menuHTML; ?>
-                        <form action="logout.php" method="POST" class="w-full mt-4">
+                        <form action="logout.php" method="POST" class="w-full mt-4 mb-20">
                             <button type="submit"
                                 class="w-full flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-full text-white bg-primary-blue hover:bg-accent-green hover:text-white transition-all duration-200 shadow">
                                 <i class="fas fa-power-off mr-2"></i> Déconnexion
@@ -620,8 +620,8 @@ if (!isset($_SESSION['id_utilisateur'])) {
                         <?php echo $menuHTML; ?>
                     </nav>
                 </div>
-                <div class="mt-6">
-                    <form action="logout.php" method="POST" id="logoutFormDesktop" class="w-full">
+                <div class="mt-6 mb-16">
+                    <form action="logout.php" method="POST" id="logoutFormDesktop" class="w-full ">
                         <button type="submit" form="logoutFormDesktop"
                             class="w-full flex items-center justify-center px-4 py-3 text-sm font-semibold rounded-full text-white bg-primary-blue hover:bg-accent-green hover:text-white transition-all duration-200 shadow">
                             <i class="fas fa-power-off mr-2"></i> Déconnexion
