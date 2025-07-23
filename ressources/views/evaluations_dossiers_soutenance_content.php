@@ -1,875 +1,1061 @@
+<?php
+require_once __DIR__ . '/../../app/config/database.php';
+
+// Connexion à la base
+$pdo = Database::getConnection();
+$rapportModel = new RapportEtudiant($pdo);
+
+// Récupérer les rapports en attente d'évaluation
+$rapportsEnAttente = $rapportModel->getRapportsByStatut('en_attente');
+$rapportsTotal = $rapportModel->getAllRapports();
+
+// Calcul des statistiques
+$totalRapports = count($rapportsTotal);
+$rapportsEnAttenteCount = count($rapportsEnAttente);
+$rapportsValides = count($rapportModel->getRapportsByStatut('valide'));
+$rapportsRejetes = count($rapportModel->getRapportsByStatut('rejete'));
+
+// Pourcentage des rapports en attente
+$pourcentageEnAttente = $totalRapports > 0 ? round(($rapportsEnAttenteCount / $totalRapports) * 100) : 0;
+
+// Gestion de la soumission d'évaluation
+$messageSuccess = '';
+$messageErreur = '';
+$selectedRapport = null;
+
+// Récupérer le rapport sélectionné (par défaut le premier en attente)
+$selectedRapportId = $_GET['rapport_id'] ?? ($rapportsEnAttente[0]->id_rapport ?? null);
+if ($selectedRapportId) {
+    $selectedRapport = $rapportModel->getRapportDetail($selectedRapportId);
+}
+
+// Traitement de la soumission de décision
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['decision'])) {
+    $id_rapport = $_POST['id_rapport'] ?? null;
+    $decision = $_POST['decision'] ?? '';
+    $commentaire = $_POST['commentaire'] ?? '';
+    
+    if ($id_rapport && in_array($decision, ['valider', 'rejeter'])) {
+        try {
+            // Mettre à jour le statut du rapport
+            $nouveauStatut = ($decision === 'valider') ? 'valide' : 'rejete';
+            
+            if ($rapportModel->updateStatutRapport($id_rapport, $nouveauStatut)) {
+                $messageSuccess = "Décision enregistrée avec succès ! Le rapport a été " . 
+                                ($decision === 'valider' ? 'validé' : 'rejeté') . ".";
+                
+                // Recharger les données
+                $rapportsEnAttente = $rapportModel->getRapportsByStatut('en_attente');
+                $selectedRapport = $rapportModel->getRapportDetail($id_rapport);
+            } else {
+                $messageErreur = "Erreur lors de l'enregistrement de la décision.";
+            }
+        } catch (Exception $e) {
+            $messageErreur = "Erreur système : " . $e->getMessage();
+        }
+    } else {
+        $messageErreur = "Données invalides. Veuillez vérifier votre sélection.";
+    }
+}
+
+// Gestion des actions spéciales (preview et download)
+$action = $_GET['action'] ?? '';
+
+if ($action === 'preview' && isset($_GET['id'])) {
+    $id_rapport = $_GET['id'];
+    $rapport = $rapportModel->getRapportDetail($id_rapport);
+    
+    if ($rapport) {
+        $cheminFichier = $rapport->chemin_fichier ?? 'rapport_' . $id_rapport . '.html';
+        $fichierContenu = __DIR__ . '/../../ressources/uploads/rapports/' . $cheminFichier;
+        
+        if (file_exists($fichierContenu)) {
+            $contenu = file_get_contents($fichierContenu);
+            
+            echo '<!DOCTYPE html>';
+            echo '<html lang="fr">';
+            echo '<head>';
+            echo '<meta charset="UTF-8">';
+            echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+            echo '<title>Prévisualisation - ' . htmlspecialchars($rapport->nom_rapport ?? $rapport->theme_rapport) . '</title>';
+            echo '<style>';
+            echo 'body { font-family: "Inter", sans-serif; margin: 20px; line-height: 1.6; color: #333; }';
+            echo '.header { background: linear-gradient(135deg, #3457cb 0%, #24407a 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; }';
+            echo '.content { max-width: 100%; overflow-wrap: break-word; }';
+            echo 'h1, h2, h3 { color: #24407a; }';
+            echo 'table { width: 100%; border-collapse: collapse; margin: 15px 0; }';
+            echo 'table th, table td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }';
+            echo 'table th { background-color: #f8fafc; }';
+            echo 'img { max-width: 100%; height: auto; }';
+            echo '</style>';
+            echo '</head>';
+            echo '<body>';
+            echo '<div class="header">';
+            echo '<h2>📄 ' . htmlspecialchars($rapport->nom_rapport ?? $rapport->theme_rapport) . '</h2>';
+            echo '<p><strong>Étudiant :</strong> ' . htmlspecialchars($rapport->prenom_etu . ' ' . $rapport->nom_etu) . '</p>';
+            echo '<p><strong>Date :</strong> ' . date('d/m/Y à H:i', strtotime($rapport->date_depot ?? $rapport->date_rapport)) . '</p>';
+            echo '</div>';
+            echo '<div class="content">';
+            echo $contenu;
+            echo '</div>';
+            echo '</body>';
+            echo '</html>';
+        } else {
+            echo '<div style="text-align: center; padding: 50px; color: #e74c3c;">❌ Fichier du rapport non trouvé</div>';
+        }
+    } else {
+        echo '<div style="text-align: center; padding: 50px; color: #e74c3c;">❌ Rapport non trouvé</div>';
+    }
+    exit;
+}
+
+if ($action === 'download_pdf' && isset($_GET['id'])) {
+    $id_rapport = $_GET['id'];
+    $rapport = $rapportModel->getRapportDetail($id_rapport);
+    
+    if ($rapport) {
+        $cheminFichier = $rapport->chemin_fichier ?? 'rapport_' . $id_rapport . '.html';
+        $fichierContenu = __DIR__ . '/../../ressources/uploads/rapports/' . $cheminFichier;
+        
+        if (file_exists($fichierContenu)) {
+            $contenu = file_get_contents($fichierContenu);
+            
+            if (file_exists(__DIR__ . '/../../vendor/autoload.php')) {
+                require_once __DIR__ . '/../../vendor/autoload.php';
+                
+                $html = '<!DOCTYPE html>
+                <html lang="fr">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>' . htmlspecialchars($rapport->nom_rapport ?? $rapport->theme_rapport) . '</title>
+                    <style>
+                        body { font-family: "Inter", sans-serif; margin: 20px; line-height: 1.6; color: #333; }
+                        .header { border-bottom: 3px solid #3457cb; padding-bottom: 15px; margin-bottom: 20px; }
+                        .header h1 { color: #3457cb; margin: 0; font-size: 24px; }
+                        .info { background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #3457cb; }
+                        .info p { margin: 5px 0; }
+                        .content { margin-top: 20px; }
+                        h1, h2, h3 { color: #24407a; }
+                        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+                        table th, table td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; font-size: 12px; }
+                        table th { background-color: #f8fafc; }
+                        img { max-width: 100%; height: auto; }
+                        @page { margin: 2cm; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>' . htmlspecialchars($rapport->nom_rapport ?? $rapport->theme_rapport) . '</h1>
+                    </div>
+                    <div class="info">
+                        <p><strong>Étudiant :</strong> ' . htmlspecialchars($rapport->prenom_etu . ' ' . $rapport->nom_etu) . '</p>
+                        <p><strong>Email :</strong> ' . htmlspecialchars($rapport->email_etu ?? 'Non renseigné') . '</p>
+                        <p><strong>Date de dépôt :</strong> ' . date('d/m/Y à H:i', strtotime($rapport->date_depot ?? $rapport->date_rapport)) . '</p>
+                        <p><strong>Statut :</strong> ' . ucfirst($rapport->statut_rapport ?? 'En attente') . '</p>
+                    </div>
+                    <div class="content">
+                        ' . $contenu . '
+                    </div>
+                </body>
+                </html>';
+                
+                $options = new \Dompdf\Options();
+                $options->set('isHtml5ParserEnabled', true);
+                $options->set('isPhpEnabled', false);
+                $options->set('isRemoteEnabled', false);
+                $options->set('defaultFont', 'Arial');
+                
+                $dompdf = new \Dompdf\Dompdf($options);
+                $dompdf->loadHtml($html);
+                $dompdf->setPaper('A4', 'portrait');
+                $dompdf->render();
+                
+                $nomRapport = $rapport->nom_rapport ?? $rapport->theme_rapport ?? 'Rapport';
+                $nomEtudiant = $rapport->prenom_etu . '_' . $rapport->nom_etu;
+                $nomFichier = 'Rapport_' . preg_replace('/[^a-zA-Z0-9_-]/', '_', $nomEtudiant) . '_' . date('Y-m-d') . '.pdf';
+                
+                header('Content-Type: application/pdf');
+                header('Content-Disposition: attachment; filename="' . $nomFichier . '"');
+                header('Content-Length: ' . strlen($dompdf->output()));
+                
+                echo $dompdf->output();
+            } else {
+                header('Content-Type: text/html; charset=utf-8');
+                header('Content-Disposition: attachment; filename="rapport_' . $id_rapport . '.html"');
+                echo $contenu;
+            }
+        } else {
+            http_response_code(404);
+            echo 'Fichier du rapport non trouvé';
+        }
+    } else {
+        http_response_code(404);
+        echo 'Rapport non trouvé';
+    }
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Évaluations des Dossiers | Mr. Diarra</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Évaluations | Univalid</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#24407a',
+                        'primary-light': '#3457cb', 
+                        'secondary': '#36865a',
+                        'secondary-light': '#59bf3d',
+                        'accent': '#F6C700',
+                        'warning': '#f59e0b',
+                        'danger': '#ef4444',
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in-down': 'fadeInDown 0.8s ease-out forwards',
+                        'slide-in-right': 'slideInRight 0.8s ease-out forwards',
+                        'scale-in': 'scaleIn 0.5s ease-out forwards',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-    .sidebar-hover:hover {
-        background-color: #fef3c7;
-        border-left: 4px solid #f59e0b;
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+        }
 
-    .fade-in {
-        animation: fadeIn 0.3s ease-in;
-    }
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    @keyframes fadeIn {
-        from {
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.08);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3457cb 0%, #36865a 50%, #59bf3d 100%);
             opacity: 0;
-            transform: translateY(10px);
+            transition: opacity 0.3s ease;
         }
 
-        to {
+        .card:hover::before {
             opacity: 1;
-            transform: translateY(0);
         }
-    }
 
-    .stat-card {
-        transition: all 0.3s ease;
-    }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(15, 23, 42, 0.12);
+        }
 
-    .stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .chart-container {
-        position: relative;
-        height: 300px;
-    }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3457cb 0%, #36865a 50%, #59bf3d 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
 
-    .metric-value {
-        font-size: 2.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
+        .stat-card:hover::before {
+            opacity: 1;
+        }
 
-    .trend-up {
-        color: #10b981;
-    }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+        }
 
-    .trend-down {
-        color: #ef4444;
-    }
+        .sidebar {
+            width: 320px;
+            background: white;
+            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.08);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid #e2e8f0;
+            border-radius: 0 20px 20px 0;
+        }
 
-    .trend-stable {
-        color: #6b7280;
-    }
+        .dossier-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            margin-bottom: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
 
-    .evaluation-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1.5rem;
-    }
+        .dossier-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+            border-color: rgba(52, 87, 203, 0.2);
+        }
+
+        .dossier-item.active {
+            background: linear-gradient(135deg, rgba(52, 87, 203, 0.1) 0%, rgba(52, 87, 203, 0.05) 100%);
+            border-color: #3457cb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(52, 87, 203, 0.2);
+        }
+
+        .dossier-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #3457cb, #36865a);
+        }
+
+        .avatar {
+            background: linear-gradient(135deg, #3457cb 0%, #36865a 100%);
+            color: white;
+            border-radius: 12px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-container {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 6px;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .tab-active {
+            background: linear-gradient(135deg, #3457cb 0%, #24407a 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(52, 87, 203, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .tab-inactive {
+            color: #64748b;
+            background: #f8fafc;
+        }
+
+        .tab-inactive:hover {
+            background: rgba(52, 87, 203, 0.1);
+            color: #3457cb;
+            transform: translateY(-1px);
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 16px 12px 48px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .search-input:focus {
+            border-color: #3457cb;
+            box-shadow: 0 0 0 3px rgba(52, 87, 203, 0.1);
+            outline: none;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3457cb 0%, #24407a 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(52, 87, 203, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(52, 87, 203, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #36865a 0%, #59bf3d 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(54, 134, 90, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(54, 134, 90, 0.4);
+        }
+
+        .btn-gray {
+            background: #f1f5f9;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-gray:hover {
+            background: white;
+            border-color: rgba(52, 87, 203, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .radio-option {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .radio-option:hover {
+            border-color: rgba(52, 87, 203, 0.2);
+            background: rgba(52, 87, 203, 0.02);
+        }
+
+        .radio-option.selected {
+            border-color: #3457cb;
+            background: rgba(52, 87, 203, 0.1);
+        }
+
+        .form-textarea {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            transition: all 0.3s ease;
+            resize: vertical;
+            min-height: 120px;
+            width: 100%;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #3457cb;
+            box-shadow: 0 0 0 3px rgba(52, 87, 203, 0.1);
+        }
+
+        .notification {
+            padding: 16px 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            border: 1px solid;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, rgba(54, 134, 90, 0.1) 0%, rgba(89, 191, 61, 0.1) 100%);
+            border-color: rgba(54, 134, 90, 0.2);
+            color: #36865a;
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+        }
+
+        .header-gradient {
+            background: linear-gradient(135deg, #24407a 0%, #3457cb 100%);
+        }
+
+        .empty-state {
+            background: white;
+            border-radius: 24px;
+            border: 2px dashed #e2e8f0;
+            padding: 48px;
+            text-align: center;
+        }
+
+        .preview-container {
+            border: 2px dashed #e2e8f0;
+            border-radius: 16px;
+            background: #f8fafc;
+            min-height: 400px;
+        }
     </style>
 </head>
 
-<body class="font-sans antialiased bg-gray-50">
-<div class="flex h-screen overflow-hidden">
-    <!-- Main content area -->
-    <div class="flex-1 overflow-y-auto bg-gray-50">
-        <div class="max-w-7xl mx-auto p-6">
-            <!-- Header -->
-            <div class="flex justify-between items-center mb-8">
-                <h1 class="text-2xl font-bold text-gray-800">
-                    <i class="fas fa-file-alt text-yellow-600 mr-2"></i>
-                    Évaluations des Dossiers de Soutenance
-                </h1>
-                <div class="flex space-x-3">
-                    <div class="relative">
-                        <select class="appearance-none bg-white border border-gray-300 rounded-md pl-3 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500">
-                            <option>Tous les dossiers</option>
-                            <option>En attente</option>
-                            <option>Validés</option>
-                            <option>À corriger</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                            <i class="fas fa-chevron-down text-xs"></i>
-                        </div>
-                    </div>
-                    <button class="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-md hover:bg-yellow-700 flex items-center">
-                        <i class="fas fa-plus mr-2"></i>
-                        Nouvelle évaluation
-                    </button>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Header Section -->
+        <div class="header bg-white rounded-3xl p-8 lg:p-12 mb-8 shadow-xl relative overflow-hidden animate-fade-in-down">
+            <div class="flex items-center gap-6 md:gap-8 flex-col md:flex-row text-center md:text-left">
+                <div class="header-icon bg-gradient-to-br from-primary to-primary-light text-white w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center text-4xl md:text-5xl shadow-lg">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <div class="header-text">
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2 tracking-tight">Évaluation des Rapports</h1>
+                    <p class="text-lg text-gray-600 font-normal">Évaluer les rapports en attente d'examen</p>
                 </div>
             </div>
+        </div>
 
-            <?php if (isset($detail)): ?>
-                <div class="max-w-3xl mx-auto mb-8 p-6 bg-white rounded-lg shadow-lg fade-in">
-                    <h2 class="text-xl font-bold mb-4 text-gray-800">
-                        <i class="fas fa-file-alt text-yellow-600 mr-2"></i>
-                        Détail du dossier de soutenance
-                    </h2>
-                    <div class="mb-4">
-                        <span class="font-semibold">Étudiant :</span> <?= htmlspecialchars($detail['rapport']['prenom_etu'] . ' ' . $detail['rapport']['nom_etu']) ?> <br>
-                        <span class="font-semibold">Email :</span> <?= htmlspecialchars($detail['rapport']['email_etu']) ?> <br>
-                        <span class="font-semibold">Promotion :</span> <?= htmlspecialchars($detail['rapport']['promotion_etu']) ?> <br>
-                        <span class="font-semibold">Sujet :</span> <?= htmlspecialchars($detail['rapport']['theme_rapport']) ?> <br>
-                        <span class="font-semibold">Date de dépôt :</span> <?= $detail['rapport']['date_depot'] ? date('d/m/Y', strtotime($detail['rapport']['date_depot'])) : 'Non déposé' ?>
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="stat-card animate-slide-in-right" style="animation-delay: 0.1s">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-primary/10 text-primary rounded-xl flex items-center justify-center text-2xl">
+                        <i class="fas fa-file-alt"></i>
                     </div>
-                    <div class="mb-4">
-                        <span class="font-semibold">Statut actuel :</span> <?= htmlspecialchars($detail['rapport']['etape_validation']) ?>
-                    </div>
-                    <div class="mb-4">
-                        <span class="font-semibold">Historique des décisions :</span>
-                        <ul class="mt-2 ml-4 list-disc text-gray-700">
-                            <?php foreach ($detail['decisions'] as $decision): ?>
-                                <li>
-                                    <span class="font-semibold"><?= htmlspecialchars($decision['decision_validation'] === 'valider' ? 'Validation' : 'Rejet') ?> :</span>
-                                    <?= htmlspecialchars($decision['decision_validation']) ?>
-                                    par <?= htmlspecialchars($decision['prenom_enseignant'] . ' ' . $decision['nom_enseignant']) ?>
-                                    le <?= date('d/m/Y H:i', strtotime($decision['date_validation'])) ?>
-                                    <?php if (!empty($decision['commentaire_validation'])): ?>
-                                        <br><span class="italic text-gray-500">"<?= htmlspecialchars($decision['commentaire_validation']) ?>"</span>
-                                    <?php endif; ?>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
-
-                    <!-- Formulaire de décision pour la commission -->
-                    <?php if ($detail['rapport']['etape_validation'] === 'approuve_communication'): ?>
-                    <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                            <i class="fas fa-gavel text-yellow-600 mr-2"></i>
-                            Décision de la Commission
-                        </h3>
-                        <form id="decisionForm" class="space-y-4">
-                            <input type="hidden" name="id_rapport" value="<?= $detail['rapport']['id_rapport'] ?>">
-
-                            <div class="flex space-x-4">
-                                <label class="flex items-center">
-                                    <input type="radio" name="decision" value="valider" class="mr-2 text-yellow-600 focus:ring-yellow-500">
-                                    <span class="text-green-700 font-medium">
-                                        <i class="fas fa-check-circle mr-1"></i>
-                                        Valider le rapport
-                                    </span>
-                                </label>
-                                <label class="flex items-center">
-                                    <input type="radio" name="decision" value="rejeter" class="mr-2 text-yellow-600 focus:ring-yellow-500">
-                                    <span class="text-red-700 font-medium">
-                                        <i class="fas fa-times-circle mr-1"></i>
-                                        Demander des corrections
-                                    </span>
-                                </label>
-                            </div>
-
-                            <div id="commentaireSection">
-                                <label for="commentaire" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Commentaires :
-                                </label>
-                                <textarea
-                                    id="commentaire"
-                                    name="commentaire"
-                                    rows="4"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
-                                    placeholder="Ajoutez un commentaire pour expliquer votre décision..."
-                                ></textarea>
-                                <p class="text-xs text-gray-500 mt-1">
-                                    <span id="commentaireHint">Commentaire optionnel pour expliquer votre décision</span>
-                                </p>
-                            </div>
-
-                            <div class="flex space-x-3">
-                                <button
-                                    type="submit"
-                                    class="px-6 py-2 bg-yellow-600 text-white font-medium rounded-md hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors"
-                                >
-                                    <i class="fas fa-paper-plane mr-2"></i>
-                                    Soumettre la décision
-                                </button>
-                                <button
-                                    type="button"
-                                    onclick="window.location.href='?page=evaluations_dossiers_soutenance'"
-                                    class="px-6 py-2 bg-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-                                >
-                                    <i class="fas fa-times mr-2"></i>
-                                    Annuler
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                    <?php endif; ?>
-
-                    <div class="flex space-x-3 mt-4">
-                        <a href="?page=evaluations_dossiers_soutenance" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
-                            <i class="fas fa-arrow-left mr-1"></i> Retour à la liste
-                        </a>
-                        <a href="?page=evaluations_dossiers_soutenance&fichier=<?= $detail['rapport']['id_rapport'] ?>" target="_blank" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                            <i class="fas fa-file-pdf mr-1"></i> Lire le rapport
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Script JavaScript pour le formulaire de décision -->
-                <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const decisionForm = document.getElementById('decisionForm');
-                    const commentaireSection = document.getElementById('commentaireSection');
-                    const commentaireField = document.getElementById('commentaire');
-                    const radioButtons = document.querySelectorAll('input[name="decision"]');
-
-                    // Fonction pour afficher les notifications
-                    function showNotification(message, type = 'success') {
-                        // Créer la notification
-                        const notification = document.createElement('div');
-                        notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 transform translate-x-full ${
-                            type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                        }`;
-                        notification.innerHTML = `
-                            <div class="flex items-center">
-                                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
-                                <span>${message}</span>
-                            </div>
-                        `;
-
-                        document.body.appendChild(notification);
-
-                        // Animer l'entrée
-                        setTimeout(() => {
-                            notification.classList.remove('translate-x-full');
-                        }, 100);
-
-                        // Supprimer après 3 secondes
-                        setTimeout(() => {
-                            notification.classList.add('translate-x-full');
-                            setTimeout(() => {
-                                document.body.removeChild(notification);
-                            }, 300);
-                        }, 3000);
-                    }
-
-                    // Afficher/masquer la section commentaire selon la décision
-                    radioButtons.forEach(radio => {
-                        radio.addEventListener('change', function() {
-                            const commentaireField = document.getElementById('commentaire');
-                            const commentaireHint = document.getElementById('commentaireHint');
-
-                            if (this.value === 'rejeter') {
-                                commentaireField.placeholder = "Détaillez les corrections à apporter au rapport...";
-                                commentaireHint.textContent = "Commentaire recommandé pour expliquer les corrections demandées";
-                                commentaireHint.className = "text-xs text-orange-500 mt-1";
-                            } else if (this.value === 'valider') {
-                                commentaireField.placeholder = "Ajoutez un commentaire pour expliquer pourquoi vous validez ce rapport...";
-                                commentaireHint.textContent = "Commentaire optionnel pour expliquer votre validation";
-                                commentaireHint.className = "text-xs text-gray-500 mt-1";
-                            }
-                        });
-                    });
-
-                    // Gestion de la soumission du formulaire
-                    decisionForm.addEventListener('submit', function(e) {
-                        e.preventDefault();
-
-                        const formData = new FormData(this);
-                        const decision = formData.get('decision');
-                        const commentaire = formData.get('commentaire');
-
-                        // Validation
-                        if (!decision) {
-                            showNotification('Veuillez sélectionner une décision.', 'error');
-                            return;
-                        }
-
-                        // Le commentaire est maintenant optionnel pour toutes les décisions
-
-                        // Confirmation
-                        const action = decision === 'valider' ? 'valider' : 'rejeter';
-                        if (!confirm(`Êtes-vous sûr de vouloir ${action} ce rapport ?`)) {
-                            return;
-                        }
-
-                        // Ajouter l'action au FormData
-                        formData.append('action', 'traiter_decision');
-
-                        // Désactiver le bouton pendant le traitement
-                        const submitButton = this.querySelector('button[type="submit"]');
-                        const originalText = submitButton.innerHTML;
-                        submitButton.disabled = true;
-                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Traitement...';
-
-                        // Envoi de la requête AJAX
-                        fetch('?page=evaluations_dossiers_soutenance&action=traiter_decision', {
-                            method: 'POST',
-                            body: formData
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                showNotification(data.message || 'Décision enregistrée avec succès !', 'success');
-                                setTimeout(() => {
-                                    window.location.href = '?page=evaluations_dossiers_soutenance';
-                                }, 1500);
-                            } else {
-                                showNotification('Erreur lors de l\'enregistrement de la décision : ' + (data.message || 'Erreur inconnue'), 'error');
-                                // Réactiver le bouton
-                                submitButton.disabled = false;
-                                submitButton.innerHTML = originalText;
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Erreur:', error);
-                            showNotification('Erreur lors de l\'enregistrement de la décision.', 'error');
-                            // Réactiver le bouton
-                            submitButton.disabled = false;
-                            submitButton.innerHTML = originalText;
-                        });
-                    });
-                });
-                </script>
-            <?php endif; ?>
-
-            <!-- KPI Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="stat-card bg-white rounded-lg shadow p-6 fade-in">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-600">Dossiers à évaluer</p>
-                            <p class="metric-value"><?= $stats['a_evaluer'] ?></p>
-                            <div class="flex items-center mt-2">
-                                <i class="fas fa-arrow-up text-sm trend-up mr-1"></i>
-                                <span class="text-sm text-green-600">+3 cette semaine</span>
-                            </div>
-                        </div>
-                        <div class="p-3 rounded-full bg-blue-100">
-                            <i class="fas fa-inbox text-blue-600 text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="stat-card bg-white rounded-lg shadow p-6 fade-in">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-600">Dossiers validés</p>
-                            <p class="metric-value"><?= $stats['valides'] ?></p>
-                            <div class="flex items-center mt-2">
-                                <i class="fas fa-arrow-up text-sm trend-up mr-1"></i>
-                                <span class="text-sm text-green-600">+5 cette semaine</span>
-                            </div>
-                        </div>
-                        <div class="p-3 rounded-full bg-green-100">
-                            <i class="fas fa-check-circle text-green-600 text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="stat-card bg-white rounded-lg shadow p-6 fade-in">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-600">Dossiers à corriger</p>
-                            <p class="metric-value"><?= $stats['a_corriger'] ?></p>
-                            <div class="flex items-center mt-2">
-                                <i class="fas fa-arrow-down text-sm trend-down mr-1"></i>
-                                <span class="text-sm text-red-600">-2 cette semaine</span>
-                            </div>
-                        </div>
-                        <div class="p-3 rounded-full bg-red-100">
-                            <i class="fas fa-exclamation-circle text-red-600 text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="stat-card bg-white rounded-lg shadow p-6 fade-in">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-gray-600">Moyenne d'évaluation</p>
-                            <p class="metric-value"><?= $stats['moyenne'] ?></p>
-                            <div class="flex items-center mt-2">
-                                <i class="fas fa-arrow-up text-sm trend-up mr-1"></i>
-                                <span class="text-sm text-green-600">+0.8 ce mois</span>
-                            </div>
-                        </div>
-                        <div class="p-3 rounded-full bg-purple-100">
-                            <i class="fas fa-chart-line text-purple-600 text-2xl"></i>
-                        </div>
+                    <div>
+                        <h3 class="text-3xl font-bold text-primary mb-1"><?= $totalRapports ?></h3>
+                        <p class="text-sm font-semibold text-gray-600">Rapports Total</p>
+                        <p class="text-xs text-blue-600 font-medium">
+                            <i class="fas fa-info-circle mr-1"></i>Global
+                        </p>
                     </div>
                 </div>
             </div>
-
-            <!-- Evaluation Grid -->
-            <div class="evaluation-grid mb-8">
-                <?php if (empty($dossiers)): ?>
-                <div class="col-span-full text-center py-8">
-                    <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
-                    <p class="text-gray-500">Aucun dossier à évaluer pour le moment.</p>
-                </div>
-                <?php else: ?>
-                <?php foreach ($dossiers as $dossier): ?>
-                <div class="bg-white rounded-lg shadow overflow-hidden fade-in hover:shadow-lg transition-shadow duration-300">
-                    <div class="p-5">
-                        <div class="flex justify-between items-start mb-3">
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-800"><?= htmlspecialchars($dossier['nom_rapport']) ?></h3>
-                                <p class="text-sm text-gray-500">Étudiant: <?= htmlspecialchars($dossier['prenom_etu'] . ' ' . $dossier['nom_etu']) ?></p>
-                            </div>
-                            <?php
-                            $statusClass = '';
-                            $statusText = '';
-                            switch ($dossier['etape_validation']) {
-                                case 'approuve_communication':
-                                    $statusClass = 'bg-blue-100 text-blue-800';
-                                    $statusText = 'Nouveau';
-                                    break;
-                                case 'valide':
-                                    $statusClass = 'bg-green-100 text-green-800';
-                                    $statusText = 'Validé';
-                                    break;
-                                case 'desapprouve_commission':
-                                    $statusClass = 'bg-orange-100 text-orange-800';
-                                    $statusText = 'À corriger';
-                                    break;
-                                default:
-                                    $statusClass = 'bg-gray-100 text-gray-800';
-                                    $statusText = 'En cours';
-                            }
-                            ?>
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full <?= $statusClass ?>"><?= $statusText ?></span>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-4"><?= htmlspecialchars($dossier['theme_rapport']) ?></p>
-
-                        <div class="flex items-center justify-between text-sm mb-4">
-                            <div>
-                                <p class="font-medium text-gray-700">Date de dépôt:</p>
-                                <p class="text-gray-500"><?= $dossier['date_depot'] ? date('d/m/Y', strtotime($dossier['date_depot'])) : 'Non déposé' ?></p>
-                            </div>
-                            <div>
-                                <p class="font-medium text-gray-700">Promotion:</p>
-                                <p class="text-gray-500"><?= htmlspecialchars($dossier['promotion_etu']) ?></p>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <?php if ($dossier['etape_validation'] === 'valide'): ?>
-                            <p class="text-sm font-medium text-gray-700 mb-1">Note:</p>
-                            <div class="flex items-center">
-                                <span class="text-lg font-bold text-yellow-600 mr-2">16.5/20</span>
-                                <div class="flex-1 bg-gray-200 rounded-full h-2">
-                                    <div class="bg-green-600 h-2 rounded-full" style="width: 82%"></div>
-                                </div>
-                            </div>
-                            <?php elseif ($dossier['etape_validation'] === 'desapprouve_commission'): ?>
-                            <p class="text-sm font-medium text-gray-700 mb-1">Retours:</p>
-                            <div class="flex items-center text-sm text-orange-600">
-                                <i class="fas fa-exclamation-circle mr-1"></i>
-                                <span>Corrections demandées</span>
-                            </div>
-                            <?php else: ?>
-                            <p class="text-sm font-medium text-gray-700 mb-1">Progression:</p>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-yellow-600 h-2 rounded-full" style="width: 75%"></div>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="flex space-x-2">
-                            <?php if ($dossier['etape_validation'] === 'approuve_communication'): ?>
-                            <a href="?page=evaluations_dossiers_soutenance&detail=<?= $dossier['id_rapport'] ?>" class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-3 rounded-md text-sm font-medium transition-colors text-center">
-                                <i class="fas fa-eye mr-1"></i> Évaluer
-                            </a>
-                            <?php elseif ($dossier['etape_validation'] === 'valide'): ?>
-                            <button class="flex-1 bg-white border border-yellow-600 hover:bg-yellow-50 text-yellow-600 py-2 px-3 rounded-md text-sm font-medium transition-colors">
-                                <i class="fas fa-edit mr-1"></i> Modifier
-                            </button>
-                            <?php elseif ($dossier['etape_validation'] === 'desapprouve_commission'): ?>
-                            <button class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-3 rounded-md text-sm font-medium transition-colors">
-                                <i class="fas fa-eye mr-1"></i> Voir retours
-                            </button>
-                            <?php endif; ?>
-                            <button class="flex-1 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 py-2 px-3 rounded-md text-sm font-medium transition-colors">
-                                <i class="fas fa-download mr-1"></i> Télécharger
-                            </button>
-                        </div>
+            
+            <div class="stat-card animate-slide-in-right" style="animation-delay: 0.2s">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-warning/10 text-warning rounded-xl flex items-center justify-center text-2xl">
+                        <i class="fas fa-clock"></i>
                     </div>
-                </div>
-                <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-
-            <!-- Detailed Table -->
-            <div class="bg-white rounded-lg shadow p-6 fade-in">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800">
-                        <i class="fas fa-table text-gray-600 mr-2"></i>
-                        Détails des évaluations
-                    </h3>
-                    <div class="flex items-center space-x-2">
-                        <input type="text" placeholder="Rechercher un dossier..." class="px-3 py-1 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500">
-                        <button class="px-3 py-1 text-sm bg-yellow-600 text-white rounded-md hover:bg-yellow-700">
-                            <i class="fas fa-filter"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étudiant</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sujet</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Promotion</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Note</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                        <span class="text-blue-600 font-medium">ML</span>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">Marie Lambert</div>
-                                        <div class="text-sm text-gray-500">marie.lambert@edu.fr</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Système de recommandation IA</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">M2 IA 2025</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Nouveau</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button class="text-yellow-600 hover:text-yellow-900 mr-3">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="text-blue-600 hover:text-blue-900 mr-3">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="text-green-600 hover:text-green-900">
-                                    <i class="fas fa-download"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                                        <span class="text-green-600 font-medium">JD</span>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">Jean Dupont</div>
-                                        <div class="text-sm text-gray-500">jean.dupont@edu.fr</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Blockchain pour la santé</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">M2 Blockchain 2025</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Validé</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-600">16.5/20</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button class="text-yellow-600 hover:text-yellow-900 mr-3">
-                                    <i class="fas fa-print"></i>
-                                </button>
-                                <button class="text-blue-600 hover:text-blue-900 mr-3">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="text-purple-600 hover:text-purple-900">
-                                    <i class="fas fa-share-alt"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
-                                        <span class="text-orange-600 font-medium">TM</span>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">Thomas Moreau</div>
-                                        <div class="text-sm text-gray-500">thomas.moreau@edu.fr</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Cybersécurité IoT</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">M2 Cybersécurité 2025</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">À corriger</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-orange-600">10.5/20</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button class="text-yellow-600 hover:text-yellow-900 mr-3">
-                                    <i class="fas fa-redo"></i>
-                                </button>
-                                <button class="text-blue-600 hover:text-blue-900 mr-3">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="text-red-600 hover:text-red-900">
-                                    <i class="fas fa-envelope"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                        <span class="text-purple-600 font-medium">SD</span>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">Sophie Dubois</div>
-                                        <div class="text-sm text-gray-500">sophie.dubois@edu.fr</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Analyse de sentiment</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">M2 Data Science 2025</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">En cours</span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button class="text-yellow-600 hover:text-yellow-900 mr-3">
-                                    <i class="fas fa-play"></i>
-                                </button>
-                                <button class="text-blue-600 hover:text-blue-900 mr-3">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="text-gray-600 hover:text-gray-900">
-                                    <i class="fas fa-comment"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="flex items-center justify-between mt-4">
-                    <div class="text-sm text-gray-500">
-                        Affichage de 1 à 4 sur 12 dossiers
-                    </div>
-                    <div class="flex space-x-2">
-                        <button class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                            Précédent
-                        </button>
-                        <button class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700">
-                            1
-                        </button>
-                        <button class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                            2
-                        </button>
-                        <button class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                            3
-                        </button>
-                        <button class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                            Suivant
-                        </button>
+                    <div>
+                        <h3 class="text-3xl font-bold text-warning mb-1"><?= $rapportsEnAttenteCount ?></h3>
+                        <p class="text-sm font-semibold text-gray-600">En Attente</p>
+                        <p class="text-xs text-orange-600 font-medium">
+                            <i class="fas fa-hourglass-half mr-1"></i><?= $pourcentageEnAttente ?>% du total
+                        </p>
                     </div>
                 </div>
             </div>
-
-            <!-- Statistics Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <!-- Notes Distribution -->
-                <div class="bg-white rounded-lg shadow p-6 fade-in">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800">
-                            <i class="fas fa-chart-bar text-blue-600 mr-2"></i>
-                            Distribution des notes
-                        </h3>
-                        <div class="flex items-center space-x-2 text-sm">
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-blue-600 rounded-full mr-1"></div>
-                                <span>2025</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-gray-300 rounded-full mr-1"></div>
-                                <span>2024</span>
-                            </div>
-                        </div>
+            
+            <div class="stat-card animate-slide-in-right" style="animation-delay: 0.3s">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center text-2xl">
+                        <i class="fas fa-check-circle"></i>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="gradesChart"></canvas>
+                    <div>
+                        <h3 class="text-3xl font-bold text-secondary mb-1"><?= $rapportsValides ?></h3>
+                        <p class="text-sm font-semibold text-gray-600">Validés</p>
+                        <p class="text-xs text-green-600 font-medium">
+                            <i class="fas fa-arrow-up mr-1"></i>Acceptés
+                        </p>
                     </div>
                 </div>
-
-                <!-- Status Evolution -->
-                <div class="bg-white rounded-lg shadow p-6 fade-in">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800">
-                            <i class="fas fa-chart-line text-green-600 mr-2"></i>
-                            Évolution des évaluations
-                        </h3>
-                        <button onclick="refreshCharts()" class="text-gray-400 hover:text-gray-600">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
+            </div>
+            
+            <div class="stat-card animate-slide-in-right" style="animation-delay: 0.4s">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-red-500/10 text-red-600 rounded-xl flex items-center justify-center text-2xl">
+                        <i class="fas fa-times-circle"></i>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="statusEvolutionChart"></canvas>
+                    <div>
+                        <h3 class="text-3xl font-bold text-red-600 mb-1"><?= $rapportsRejetes ?></h3>
+                        <p class="text-sm font-semibold text-gray-600">Rejetés</p>
+                        <p class="text-xs text-red-600 font-medium">
+                            <i class="fas fa-arrow-down mr-1"></i>Refusés
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Messages -->
+        <?php if ($messageSuccess): ?>
+            <div class="notification success animate-fade-in-down">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-3 text-lg"></i>
+                    <span class="font-semibold"><?= htmlspecialchars($messageSuccess) ?></span>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($messageErreur): ?>
+            <div class="notification error animate-fade-in-down">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle mr-3 text-lg"></i>
+                    <span class="font-semibold"><?= htmlspecialchars($messageErreur) ?></span>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <!-- Main Content Area -->
+        <div class="flex gap-8">
+            <!-- Sidebar -->
+            <aside class="sidebar p-6 flex-shrink-0 overflow-y-auto animate-scale-in">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-primary mb-2">📂 Dossiers</h2>
+                    <p class="text-sm text-gray-600">Rapports en attente d'évaluation</p>
+                </div>
+
+                <div class="mb-6">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="Rechercher un dossier..."
+                            class="search-input" />
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <ul id="dossierList" class="space-y-2">
+                    <?php if (!empty($rapportsEnAttente)): ?>
+                        <?php foreach ($rapportsEnAttente as $index => $rapport): 
+                            $initiales = strtoupper(substr($rapport->prenom_etu, 0, 1) . substr($rapport->nom_etu, 0, 1));
+                            $dateDepot = date('d/m/Y', strtotime($rapport->date_rapport));
+                            $isActive = ($selectedRapport && $selectedRapport->id_rapport == $rapport->id_rapport);
+                        ?>
+                        <li>
+                            <div class="dossier-item <?= $isActive ? 'active' : '' ?> p-4" onclick="selectDossier(<?= $rapport->id_rapport ?>)">
+                                <div class="flex items-center space-x-4">
+                                    <div class="avatar">
+                                        <?= $initiales ?>
+                                    </div>
+                                    <div class="flex-1 overflow-hidden">
+                                        <div class="text-sm font-semibold text-gray-900 truncate"><?= htmlspecialchars($rapport->prenom_etu . ' ' . $rapport->nom_etu) ?></div>
+                                        <div class="text-xs text-gray-500 truncate"><?= htmlspecialchars($rapport->nom_rapport ?? $rapport->theme_rapport) ?></div>
+                                        <div class="text-xs text-secondary mt-1">📅 <?= $dateDepot ?></div>
+                                    </div>
+                                    <?php if ($isActive): ?>
+                                    <svg class="h-5 w-5 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li>
+                            <div class="empty-state text-center py-8">
+                                <div class="text-4xl mb-4">📂</div>
+                                <p class="text-gray-500">Aucun dossier en attente</p>
+                            </div>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 animate-scale-in" style="animation-delay: 0.2s">
+                <div class="flex flex-col lg:flex-row lg:justify-between items-start lg:items-center mb-8">
+                    <div class="mb-6 lg:mb-0">
+                        <h1 class="text-4xl font-bold text-primary mb-2">
+                            <?= $selectedRapport ? htmlspecialchars($selectedRapport->prenom_etu . ' ' . $selectedRapport->nom_etu) : 'Aucun dossier sélectionné' ?>
+                        </h1>
+                        <p class="text-xl text-gray-600"><?= $selectedRapport ? htmlspecialchars($selectedRapport->nom_rapport ?? $selectedRapport->theme_rapport) : 'Sélectionnez un dossier dans la liste' ?></p>
+                    </div>
+
+                    <div class="tab-container flex space-x-2">
+                        <button id="tab-info" class="tab-btn tab-active" onclick="switchTab('info')">
+                            📋 Informations
+                        </button>
+                        <button id="tab-preview" class="tab-btn tab-inactive" onclick="switchTab('preview')">
+                            👁️ Aperçu
+                        </button>
+                        <button id="tab-decision" class="tab-btn tab-inactive" onclick="switchTab('decision')">
+                            ⚖️ Décision
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab Content -->
+                <section id="content-info" class="animate-fade-in-down">
+                    <?php if ($selectedRapport): ?>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="card p-6">
+                            <div class="text-sm text-gray-500 mb-2 font-medium">👤 Étudiant</div>
+                            <div class="font-bold text-primary text-xl"><?= htmlspecialchars($selectedRapport->prenom_etu . ' ' . $selectedRapport->nom_etu) ?></div>
+                        </div>
+
+                        <div class="card p-6">
+                            <div class="text-sm text-gray-500 mb-2 font-medium">✉️ Email</div>
+                            <div class="font-semibold text-gray-800"><?= htmlspecialchars($selectedRapport->email_etu ?? 'Non renseigné') ?></div>
+                        </div>
+
+                        <div class="card p-6">
+                            <div class="text-sm text-gray-500 mb-2 font-medium">🎓 Promotion</div>
+                            <div class="font-bold text-primary text-xl"><?= htmlspecialchars($selectedRapport->promotion_etu ?? '2024-2025') ?></div>
+                        </div>
+
+                        <div class="card p-6">
+                            <div class="text-sm text-gray-500 mb-2 font-medium">📅 Déposé le</div>
+                            <div class="font-bold text-gray-800 text-xl"><?= date('d/m/Y', strtotime($selectedRapport->date_depot ?? $selectedRapport->date_rapport)) ?></div>
+                        </div>
+                    </div>
+
+                    <div class="card p-8">
+                        <div class="text-sm text-gray-500 mb-4 font-medium">📝 Sujet du Rapport</div>
+                        <div class="font-semibold text-primary text-2xl leading-relaxed">
+                            <?= htmlspecialchars($selectedRapport->theme_rapport ?? $selectedRapport->nom_rapport ?? 'Sujet non renseigné') ?>
+                        </div>
+                    </div>
+                    <?php else: ?>
+                    <div class="empty-state">
+                        <div class="text-6xl mb-4">📋</div>
+                        <h3 class="text-2xl font-bold text-gray-700 mb-2">Aucun dossier sélectionné</h3>
+                        <p class="text-gray-500">Sélectionnez un dossier dans la liste de gauche pour commencer l'évaluation.</p>
+                    </div>
+                    <?php endif; ?>
+                </section>
+
+                <section id="content-preview" class="hidden animate-fade-in-down">
+                    <?php if ($selectedRapport): ?>
+                    <div class="card p-8">
+                        <h3 class="text-2xl font-bold text-primary mb-6 flex items-center">
+                            <span class="text-2xl mr-3">👁️</span>
+                            Aperçu du Rapport
+                        </h3>
+
+                        <div class="mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="text-sm text-gray-600 mb-1">📄 Nom du fichier</div>
+                                    <div class="font-semibold text-gray-800">
+                                        <?= htmlspecialchars($selectedRapport->chemin_fichier ?? 'rapport_' . $selectedRapport->id_rapport . '.html') ?>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="text-sm text-gray-600 mb-1">📊 Statut</div>
+                                    <div class="font-semibold">
+                                        <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                                            En attente d'évaluation
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="preview-container overflow-hidden mb-6 min-h-96 flex items-center justify-center">
+                            <div id="preview-content" class="text-center">
+                                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mb-4 mx-auto">
+                                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-xl font-semibold mb-2">Document disponible</p>
+                                <p class="text-gray-600"><?= htmlspecialchars($selectedRapport->nom_rapport ?? 'Rapport_' . $selectedRapport->prenom_etu . '_' . $selectedRapport->nom_etu . '_2025') ?></p>
+                                <p class="text-sm text-gray-500 mt-2">Cliquez sur "Prévisualiser" pour voir le contenu</p>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end space-x-4">
+                            <button class="btn btn-gray" onclick="previewRapport(<?= $selectedRapport->id_rapport ?>)">
+                                👁️ Prévisualiser
+                            </button>
+                            <button class="btn btn-primary" onclick="downloadRapportPDF(<?= $selectedRapport->id_rapport ?>)">
+                                <i class="fas fa-download"></i>
+                                Télécharger PDF
+                            </button>
+                        </div>
+                    </div>
+                    <?php else: ?>
+                    <div class="empty-state">
+                        <div class="text-6xl mb-4">👁️</div>
+                        <h3 class="text-2xl font-bold text-gray-700 mb-2">Aucun dossier sélectionné</h3>
+                        <p class="text-gray-500">Sélectionnez un dossier pour voir l'aperçu du rapport.</p>
+                    </div>
+                    <?php endif; ?>
+                </section>
+
+                <section id="content-decision" class="hidden animate-fade-in-down">
+                    <?php if ($selectedRapport): ?>
+                    <div class="max-w-2xl mx-auto">
+                        <div class="card p-8">
+                            <div class="text-center mb-8">
+                                <h3 class="text-3xl font-bold text-primary mb-2">Prendre une Décision</h3>
+                                <p class="text-gray-600">Évaluez le rapport et prenez une décision</p>
+                            </div>
+
+                            <form method="POST" class="space-y-6">
+                                <input type="hidden" name="id_rapport" value="<?= $selectedRapport->id_rapport ?>">
+
+                                <div class="space-y-4">
+                                    <div class="radio-option" onclick="selectOption(this, 'valider')">
+                                        <label class="flex items-center text-lg cursor-pointer">
+                                            <input type="radio" name="decision" value="valider" class="mr-4 h-5 w-5 text-secondary">
+                                            <div>
+                                                <div class="font-semibold text-secondary">✅ Valider le rapport</div>
+                                                <div class="text-sm text-gray-500 mt-1">Le rapport répond aux critères et peut être accepté</div>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <div class="radio-option" onclick="selectOption(this, 'rejeter')">
+                                        <label class="flex items-center text-lg cursor-pointer">
+                                            <input type="radio" name="decision" value="rejeter" class="mr-4 h-5 w-5 text-red-500">
+                                            <div>
+                                                <div class="font-semibold text-red-600">❌ Rejeter le rapport</div>
+                                                <div class="text-sm text-gray-500 mt-1">Le rapport nécessite des améliorations</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="commentaire" class="block font-semibold text-primary mb-3 text-lg">
+                                        💬 Commentaire pour l'étudiant
+                                    </label>
+                                    <textarea id="commentaire" name="commentaire"
+                                        class="form-textarea"
+                                        placeholder="Ajoutez vos observations, suggestions ou félicitations..."></textarea>
+                                </div>
+
+                                <div class="flex justify-end space-x-4 pt-6">
+                                    <button type="button" class="btn btn-gray">
+                                        Annuler
+                                    </button>
+                                    <button type="submit" class="btn btn-secondary">
+                                        <i class="fas fa-check"></i>
+                                        Soumettre la Décision
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <?php else: ?>
+                    <div class="empty-state">
+                        <div class="text-6xl mb-4">⚖️</div>
+                        <h3 class="text-2xl font-bold text-gray-700 mb-2">Aucun dossier sélectionné</h3>
+                        <p class="text-gray-500">Sélectionnez un dossier pour prendre une décision d'évaluation.</p>
+                    </div>
+                    <?php endif; ?>
+                </section>
+            </main>
+        </div>
     </div>
-</div>
 
-<script>
-    // Initialisation des graphiques
-    document.addEventListener('DOMContentLoaded', function() {
-        // Graphique de distribution des notes
-        const gradesCtx = document.getElementById('gradesChart').getContext('2d');
-        const gradesChart = new Chart(gradesCtx, {
-            type: 'bar',
-            data: {
-                labels: ['0-5', '5-10', '10-12', '12-14', '14-16', '16-18', '18-20'],
-                datasets: [{
-                    label: '2025',
-                    data: [2, 5, 8, 12, 15, 10, 3],
-                    backgroundColor: '#3b82f6',
-                    borderColor: '#2563eb',
-                    borderWidth: 1
-                }, {
-                    label: '2024',
-                    data: [3, 7, 10, 14, 12, 8, 2],
-                    backgroundColor: '#e5e7eb',
-                    borderColor: '#d1d5db',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            usePointStyle: true,
-                            padding: 20
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
+    <script>
+        function switchTab(tab) {
+            const tabs = ['info', 'preview', 'decision'];
+
+            tabs.forEach(t => {
+                const tabBtn = document.getElementById('tab-' + t);
+                const contentSection = document.getElementById('content-' + t);
+
+                if (t === tab) {
+                    tabBtn.classList.add('tab-active');
+                    tabBtn.classList.remove('tab-inactive');
+                    contentSection.classList.remove('hidden');
+                } else {
+                    tabBtn.classList.remove('tab-active');
+                    tabBtn.classList.add('tab-inactive');
+                    contentSection.classList.add('hidden');
+                }
+            });
+        }
+
+        function selectOption(element, value) {
+            document.querySelectorAll('.radio-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            element.classList.add('selected');
+
+            const radioInput = element.querySelector('input[type="radio"]');
+            if (radioInput) {
+                radioInput.checked = true;
+            }
+        }
+
+        function selectDossier(rapportId) {
+            const currentUrl = window.location.href.split('?')[0];
+            const currentParams = new URLSearchParams(window.location.search);
+            currentParams.set('rapport_id', rapportId);
+            window.location.href = currentUrl + '?' + currentParams.toString();
+        }
+
+        function previewRapport(rapportId) {
+            const previewContent = document.getElementById('preview-content');
+            
+            previewContent.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-64">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+                    <p class="text-gray-500">Chargement de la prévisualisation...</p>
+                </div>
+            `;
+
+            const iframe = document.createElement('iframe');
+            iframe.src = `?page=evaluations_dossiers_soutenance&action=preview&id=${rapportId}`;
+            iframe.style.width = '100%';
+            iframe.style.height = '500px';
+            iframe.style.border = 'none';
+            iframe.style.borderRadius = '12px';
+            
+            iframe.onload = function() {
+                previewContent.innerHTML = '';
+                previewContent.appendChild(iframe);
+            };
+
+            iframe.onerror = function() {
+                previewContent.innerHTML = `
+                    <div class="h-64 flex flex-col items-center justify-center text-red-500">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                        <p>Erreur lors du chargement de la prévisualisation</p>
+                    </div>
+                `;
+            };
+        }
+
+        function downloadRapportPDF(rapportId) {
+            showToast('Génération du PDF en cours...', 'info');
+            
+            const downloadUrl = `?page=evaluations_dossiers_soutenance&action=download_pdf&id=${rapportId}`;
+            
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = '';
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            setTimeout(() => {
+                showToast('Téléchargement initié', 'success');
+            }, 1000);
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm transform transition-all duration-300 translate-x-full`;
+
+            const bgColor = type === 'success' ? 'bg-gradient-to-r from-secondary to-secondary-light' :
+                type === 'error' ? 'bg-gradient-to-r from-red-500 to-red-600' :
+                'bg-gradient-to-r from-primary to-primary-light';
+
+            toast.className += ` ${bgColor} text-white`;
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <span class="mr-2">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-x-full'), 100);
+
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Search functionality
+        document.getElementById('searchInput')?.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const dossiers = document.querySelectorAll('.dossier-item');
+            
+            dossiers.forEach(dossier => {
+                const text = dossier.textContent.toLowerCase();
+                dossier.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch (e.key) {
+                    case '1':
+                        e.preventDefault();
+                        switchTab('info');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        switchTab('preview');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        switchTab('decision');
+                        break;
                 }
             }
         });
 
-        // Graphique d'évolution des statuts
-        const statusCtx = document.getElementById('statusEvolutionChart').getContext('2d');
-        const statusChart = new Chart(statusCtx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai'],
-                datasets: [{
-                    label: 'Nouveaux',
-                    data: [5, 8, 12, 15, 18],
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }, {
-                    label: 'Validés',
-                    data: [3, 6, 10, 14, 20],
-                    borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }, {
-                    label: 'À corriger',
-                    data: [2, 4, 5, 8, 7],
-                    borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            usePointStyle: true,
-                            padding: 20
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                },
-                elements: {
-                    point: {
-                        radius: 4,
-                        hoverRadius: 6
-                    }
-                }
-            }
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animation des cartes
+            const cards = document.querySelectorAll('.stat-card, .card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
         });
-
-        // Animation des métriques
-        const metrics = document.querySelectorAll('.metric-value');
-        metrics.forEach((metric, index) => {
-            const finalValue = metric.textContent;
-            metric.textContent = '0';
-
-            setTimeout(() => {
-                const increment = finalValue.includes('/') ? 0.5 : 1;
-                const target = parseFloat(finalValue);
-                let current = 0;
-
-                const timer = setInterval(() => {
-                    current += increment;
-                    if (current >= target) {
-                        current = target;
-                        clearInterval(timer);
-                    }
-
-                    if (finalValue.includes('/')) {
-                        metric.textContent = current.toFixed(1) + '/20';
-                    } else {
-                        metric.textContent = Math.round(current);
-                    }
-                }, 50);
-            }, index * 200);
-        });
-
-        // Animation d'entrée pour les éléments
-        const elements = document.querySelectorAll('.fade-in');
-        elements.forEach((el, index) => {
-            setTimeout(() => {
-                el.style.opacity = '1';
-                el.style.transform = 'translateY(0)';
-            }, index * 100);
-        });
-    });
-
-    // Fonction de rafraîchissement
-    function refreshCharts() {
-        // Simuler le rafraîchissement
-        console.log("Actualisation des graphiques...");
-        // En réalité, ici vous feriez une requête AJAX pour récupérer les nouvelles données
-    }
-</script>
+    </script>
 </body>
 
 </html>

@@ -22,10 +22,7 @@ include __DIR__ . '/../ressources/routes/evaluationDossiersRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionDossiersCandidaturesRoutes.php';
 include __DIR__ . '/../ressources/routes/sauvegardeRestaurationRoutes.php';
 include __DIR__ . '/../ressources/routes/notesResultatsRoutes.php';
-// include __DIR__ . '/../ressources/routes/archivesDossiersSoutenanceRoutes.php';
-// include __DIR__ . '/../ressources/routes/auditRoutes.php';
-// include __DIR__ . '/../ressources/routes/redactionCompteRenduRoutes.php';
-// include __DIR__ . '/../ressources/routes/archivesCompteRenduRoutes.php';
+
 
 // Si l'utilisateur n'est pas connecté, rediriger vers la page de login
 if (!isset($_SESSION['id_utilisateur'])) {
@@ -609,6 +606,7 @@ if (!isset($_SESSION['id_utilisateur'])) {
                 </div>
             </div>
         </div>
+
         <!-- Static sidebar for desktop -->
         <div class="hidden md:flex md:flex-shrink-0 min-h-screen">
             <div class="flex flex-col w-64 h-full bg-sidebar-blue rounded-3xl shadow-xl m-4 p-4">
@@ -630,6 +628,7 @@ if (!isset($_SESSION['id_utilisateur'])) {
                 </div>
             </div>
         </div>
+
         <!-- Main content -->
         <div class="flex flex-col flex-1 w-0 overflow-hidden">
             <!-- Top navigation -->
