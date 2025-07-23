@@ -16,10 +16,6 @@ include __DIR__ . '/../ressources/routes/gestionDashboardRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionScolariteRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionNotesRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionCandidaturesRoutes.php';
-<<<<<<< HEAD
-
-=======
->>>>>>> e139be67d7aa857e535a55e88a4fcfb071fa0a4d
 include __DIR__ . '/../ressources/routes/verificationRapportsRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionReclamationsScolariteRoutes.php';
 include __DIR__ . '/../ressources/routes/evaluationDossiersRoutes.php';
@@ -610,11 +606,7 @@ if (!isset($_SESSION['id_utilisateur'])) {
                 </div>
             </div>
         </div>
-<<<<<<< HEAD
 
-       
-
-=======
         <!-- Static sidebar for desktop -->
         <div class="hidden md:flex md:flex-shrink-0 min-h-screen">
             <div class="flex flex-col w-64 h-full bg-sidebar-blue rounded-3xl shadow-xl m-4 p-4">
@@ -636,7 +628,7 @@ if (!isset($_SESSION['id_utilisateur'])) {
                 </div>
             </div>
         </div>
->>>>>>> e139be67d7aa857e535a55e88a4fcfb071fa0a4d
+
         <!-- Main content -->
         <div class="flex flex-col flex-1 w-0 overflow-hidden">
             <!-- Top navigation -->
