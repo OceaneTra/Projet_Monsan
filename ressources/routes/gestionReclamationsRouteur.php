@@ -16,9 +16,6 @@ if (isset($_GET['action'])) {
         case 'suivi_historique_reclamation':
             $controller->suiviHistoriqueReclamations();
             break;
-        case 'traiter':
-            $controller->traiterReclamation();
-            break;
         case 'exporter_reclamations':
             $controller->exporterReclamations();
             break;
