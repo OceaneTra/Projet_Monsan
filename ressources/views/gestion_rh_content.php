@@ -89,12 +89,12 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                     <nav class="-mb-px flex space-x-4" aria-label="Tabs">
                         <a href="?page=gestion_rh&tab=pers_admin"
                             class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm hover:text-gray-700
-                                  <?= ($activeTab === 'pers_admin') ? 'border-green-500 text-green-600 bg-green-50' : 'border-transparent hover:border-gray-300' ?>">
+                                <?= ($activeTab === 'pers_admin') ? 'border-primary text-primary bg-primary-light' : 'border-transparent hover:border-gray-300' ?>">
                             <i class="fas fa-users-cog mr-2"></i> Personnel administratif
                         </a>
                         <a href="?page=gestion_rh&tab=enseignant"
                             class="tab-button whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm hover:text-gray-700
-                                  <?= ($activeTab === 'enseignant') ? 'border-green-500 text-green-600 bg-green-50' : 'border-transparent hover:border-gray-300' ?>">
+                                <?= ($activeTab === 'enseignant') ? 'border-primary text-primary bg-primary-light' : 'border-transparent hover:border-gray-300' ?>">
                             <i class="fas fa-user-tag mr-2"></i> Enseignants
                         </a>
                     </nav>
@@ -123,8 +123,8 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
 
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-semibold text-gray-700">Gestion du personnel administratif</h3>
-                        <a href="?page=gestion_rh&tab=pers_admin&action=add" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-sm
-                                  transition duration-150 ease-in-out flex items-center">
+                        <a href="?page=gestion_rh&tab=pers_admin&action=add" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg shadow-sm
+                                transition duration-150 ease-in-out flex items-center">
                             <i class="fas fa-plus mr-2"></i> Ajouter un personnel
                         </a>
                     </div>
@@ -133,7 +133,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                         class="px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-gray-200">
                         <div class="relative w-full sm:w-1/2 lg:w-1/3 mb-4 sm:mb-0">
                             <input type="text" id="searchInput" placeholder="Rechercher un personnel..."
-                                class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200">
+                                class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                 <i class="fas fa-search text-gray-400"></i>
                             </span>
@@ -159,7 +159,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                     <!-- Titre de la liste -->
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h4 class="text-lg font-semibold text-gray-700 flex items-center">
-                            <i class="fas fa-list-ul mr-2 text-green-500"></i>
+                            <i class="fas fa-list-ul mr-2 text-primary"></i>
                             Liste du personnel administratif
                         </h4>
                     </div>
@@ -174,7 +174,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                     <tr>
                                         <th scope="col" class="px-4 py-3 text-center">
                                             <input type="checkbox" id="selectAllCheckbox"
-                                                class="form-checkbox h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer">
+                                                class="form-checkbox h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer">
                                         </th>
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -212,7 +212,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                         <td class="px-4 py-4 text-center">
                                             <input type="checkbox" name="selected_ids[]"
                                                 value="<?= htmlspecialchars($admin->id_pers_admin) ?>"
-                                                class="form-checkbox h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer">
+                                                class="form-checkbox h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer">
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                             <?= htmlspecialchars($admin->nom_pers_admin) ?>
@@ -255,7 +255,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                         id="modal-admin">
                         <div class="relative mx-auto p-6 w-full max-w-2xl bg-white rounded-lg shadow-xl">
                             <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
-                                <h3 class="text-xl font-semibold text-green-600">
+                                <h3 class="text-xl font-semibold text-primary">
                                     <?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? 'Modifier un membre du personnel' : 'Ajouter un membre du personnel' ?>
                                 </h3>
                                 <a href="?page=gestion_rh&tab=pers_admin"
@@ -276,7 +276,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                             class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
                                         <input type="text" name="nom" id="nom" style="outline: none;"
                                             value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->nom_pers_admin) : '' ?>"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                                             required>
                                     </div>
 
@@ -285,7 +285,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                             class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
                                         <input type="text" name="prenom" id="prenom" style="outline: none;"
                                             value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->prenom_pers_admin) : '' ?>"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                                             required>
                                     </div>
                                 </div>
@@ -296,7 +296,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                             class="block text-sm font-medium text-gray-700 mb-2">Email</label>
                                         <input type="email" name="email" id="email" style="outline: none;"
                                             value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->email_pers_admin) : '' ?>"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                                             required>
                                     </div>
                                     <div>
@@ -304,7 +304,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                             class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
                                         <input type="tel" name="telephone" id="telephone" style="outline: none;"
                                             value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->tel_pers_admin) : '' ?>"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                                             required>
                                     </div>
                                 </div>
@@ -315,7 +315,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                             class="block text-sm font-medium text-gray-700 mb-2">Poste</label>
                                         <input type="text" name="poste" id="poste" style="outline: none;"
                                             value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->poste) : '' ?>"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                                             required>
                                     </div>
                                     <div>
@@ -325,7 +325,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                         <input type="date" name="date_embauche" id="date_embauche"
                                             style="outline: none;"
                                             value="<?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? htmlspecialchars($pers_admin_a_modifier->date_embauche) : '' ?>"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                                             required>
                                     </div>
                                 </div>
@@ -338,7 +338,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                     </a>
                                     <button type="submit"
                                         name="<?= ($action === 'edit') ? 'btn_modifier_pers_admin' : 'btn_add_pers_admin' ?>"
-                                        class="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200">
+                                        class="px-6 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors duration-200">
                                         <?= ($action === 'edit' && isset($pers_admin_a_modifier)) ? 'Modifier' : 'Enregistrer' ?>
                                     </button>
                                 </div>
@@ -369,7 +369,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
 
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-semibold text-gray-700">Gestion des enseignants</h3>
-                        <a href="?page=gestion_rh&tab=enseignant&action=add" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow-sm
+                        <a href="?page=gestion_rh&tab=enseignant&action=add" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg shadow-sm
                                   transition duration-150 ease-in-out flex items-center">
                             <i class="fas fa-plus mr-2"></i> Ajouter un enseignant
                         </a>
@@ -380,7 +380,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                         class="px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-gray-200">
                         <div class="relative w-full sm:w-1/2 lg:w-1/3 mb-4 sm:mb-0">
                             <input type="text" id="searchInputEnseignant" placeholder="Rechercher un enseignant..."
-                                class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200">
+                                class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200">
                             <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                 <i class="fas fa-search text-gray-400"></i>
                             </span>
@@ -405,7 +405,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                     <!-- Titre de la liste -->
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h4 class="text-lg font-semibold text-gray-700 flex items-center">
-                            <i class="fas fa-chalkboard-teacher mr-2 text-green-500"></i>
+                            <i class="fas fa-chalkboard-teacher mr-2 text-primary"></i>
                             Liste des enseignants
                         </h4>
                     </div>
@@ -420,7 +420,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                     <tr>
                                         <th scope="col" class="px-4 py-3 text-center">
                                             <input type="checkbox" id="selectAllCheckboxEnseignant"
-                                                class="form-checkbox h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer">
+                                                class="form-checkbox h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer">
                                         </th>
 
                                         <th scope="col"
@@ -460,7 +460,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                         <td class="px-4 py-4 text-center">
                                             <input type="checkbox" name="selected_ids[]"
                                                 value="<?= htmlspecialchars($enseignant->id_enseignant) ?>"
-                                                class="user-checkbox form-checkbox h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500 cursor-pointer">
+                                                class="user-checkbox form-checkbox h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer">
                                         </td>
 
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -507,7 +507,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                         id="modal-enseignant">
                         <div class="relative mx-auto p-6 w-full max-w-2xl bg-white rounded-lg shadow-xl">
                             <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
-                                <h3 class="text-xl font-semibold text-green-600">
+                                <h3 class="text-xl font-semibold text-primary">
                                     <?= ($action === 'edit' && isset($enseignant_a_modifier)) ? 'Modifier un enseignant' : 'Ajouter un enseignant' ?>
                                 </h3>
                                 <a href="?page=gestion_rh&tab=enseignant"
@@ -528,7 +528,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                             class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
                                         <input type="text" name="nom" id="nom_enseignant" style="outline: none;"
                                             value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->nom_enseignant) : '' ?>"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                                             required>
                                     </div>
 
@@ -537,7 +537,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                             class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
                                         <input type="text" name="prenom" id="prenom_enseignant" style="outline: none;"
                                             value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->prenom_enseignant) : '' ?>"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                                             required>
                                     </div>
                                 </div>
@@ -548,7 +548,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                             class="block text-sm font-medium text-gray-700 mb-2">Email</label>
                                         <input type="email" name="email" id="email_enseignant" style="outline: none;"
                                             value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->mail_enseignant) : '' ?>"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                                             required>
                                     </div>
 
@@ -556,7 +556,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                         <label for="specialite"
                                             class="block text-sm font-medium text-gray-700 mb-2">Spécialité</label>
                                         <select name="id_specialite" id="specialite" style="outline: none;" required
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200">
                                             <?php foreach ($listeSpecialites as $specialite): ?>
                                             <option value="<?= htmlspecialchars($specialite->id_specialite) ?>"
                                                 <?= ($action === 'edit' && isset($enseignant_a_modifier) && $enseignant_a_modifier->id_specialite == $specialite->id_specialite) ? 'selected' : '' ?>>
@@ -571,7 +571,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                         <label for="fonction"
                                             class="block text-sm font-medium text-gray-700 mb-2">Fonction</label>
                                         <select name="id_fonction" id="fonction" style="outline: none;" required
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200">
                                             <?php foreach ($listeFonctions as $fonction): ?>
                                             <option value="<?= htmlspecialchars($fonction->id_fonction) ?>"
                                                 <?= ($action === 'edit' && isset($enseignant_a_modifier) && $enseignant_a_modifier->id_fonction == $fonction->id_fonction) ? 'selected' : '' ?>>
@@ -588,7 +588,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                         <input type="date" name="date_fonction" id="date_fonction"
                                             style="outline: none;"
                                             value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->date_occupation) : '' ?>"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                                             required>
                                     </div>
                                 </div>
@@ -597,7 +597,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                         <label for="grade"
                                             class="block text-sm font-medium text-gray-700 mb-2">Grade</label>
                                         <select name="id_grade" id="grade" style="outline: none;" required
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200">
                                             <?php foreach ($listeGrades as $grade): ?>
                                             <option value="<?= htmlspecialchars($grade->id_grade) ?>"
                                                 <?= ($action === 'edit' && isset($enseignant_a_modifier) && $enseignant_a_modifier->id_grade == $grade->id_grade) ? 'selected' : '' ?>>
@@ -615,7 +615,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                             grade</label>
                                         <input type="date" name="date_grade" id="date_grade" style="outline: none;"
                                             value="<?= ($action === 'edit' && isset($enseignant_a_modifier)) ? htmlspecialchars($enseignant_a_modifier->date_grade) : '' ?>"
-                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
                                             required>
                                     </div>
                                 </div>
@@ -625,7 +625,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                             Type d'enseignant
                                         </label>
                                         <select name="type_enseignant" id="type_enseignant" required
-                                            class="focus:outline-none w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white transition-all duration-200">
+                                            class="focus:outline-none w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-primary focus:border-primary bg-white transition-all duration-200">
                                             <option value="Simple"
                                                 <?php echo ($enseignant_a_modifier && $enseignant_a_modifier->type_enseignant) ? 'selected' : ''; ?>>
                                                 Simple</option>
@@ -644,7 +644,7 @@ $enseignant_edit = $enseignant_a_modifier ?? null;
                                     </a>
                                     <button type="submit"
                                         name="<?= ($action === 'edit') ? 'btn_modifier_enseignant' : 'btn_add_enseignant' ?>"
-                                        class="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200">
+                                        class="px-6 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors duration-200">
                                         <?= ($action === 'edit' && isset($enseignant_a_modifier)) ? 'Modifier' : 'Ajouter' ?>
                                     </button>
                                 </div>
@@ -792,7 +792,7 @@ function showDeleteModal(type) {
 // Gestion de la suppression
 if (confirmDelete) {
     confirmDelete.addEventListener('click', function() {
-        const activeTab = document.querySelector('.tab-button.border-green-500').getAttribute('href').split(
+        const activeTab = document.querySelector('.tab-button.border-primary').getAttribute('href').split(
             'tab=')[1];
         const form = activeTab === 'pers_admin' ? formListePersAdmin : formListeEnseignant;
 

@@ -1,67 +1,132 @@
+<?php
+// Supposons que votre contrôleur prépare ce tableau.
+// Cette partie est un exemple pour que le code soit fonctionnel.
+// VOUS N'AVEZ PAS BESOIN DE CHANGER VOTRE LOGIQUE PHP EXISTANTE.
+$cardReclamation = isset($GLOBALS['cardReclamation']) ? $GLOBALS['cardReclamation'] : [
+    [
+        'bg_color' => 'bg-green-500', // ignoré dans le nouveau style
+        'icon' => 'fas fa-plus-circle',
+        'text_color' => 'text-white', // ignoré
+        'title' => 'Soumettre une nouvelle réclamation',
+        'description' => 'Un problème ou une question ? Soumettez votre réclamation ici et notre équipe vous répondra dans les plus brefs délais.',
+        'link' => '?page=reclamations&action=creer',
+        'title_link' => 'Créer une réclamation'
+    ],
+    [
+        'bg_color' => 'bg-blue-500', // ignoré
+        'icon' => 'fas fa-history',
+        'text_color' => 'text-white', // ignoré
+        'title' => 'Consulter l\'historique de mes réclamations',
+        'description' => 'Suivez le statut de vos réclamations passées et consultez les réponses apportées par l\'administration.',
+        'link' => '?page=reclamations&action=historique',
+        'title_link' => 'Voir mon historique'
+    ]
+];
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Réclamations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
 
-<body class="bg-gradient-to-r from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center">
+<body class="bg-gray-100">
 
-    <div class="container mx-auto py-10">
+    <div id="notification-container" class="fixed top-5 right-5 z-[100] w-full max-w-sm">
         <?php if (isset($_SESSION['message'])): ?>
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6 text-center">
-            <strong class="font-bold">
-                <?php if ($_SESSION['message']['type'] === 'success'): ?>Succès !<?php else: ?>Erreur !<?php endif; ?>
-            </strong> <?= htmlspecialchars($_SESSION['message']['text']) ?>
-        </div>
-        <?php unset($_SESSION['message']); ?>
-        <?php endif; ?>
-        <h1 class="text-3xl font-bold text-center text-green-800 mb-10">Gestion des Réclamations</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <?php foreach ($cardReclamation as $card): ?>
-            <div
-                class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-75 transform hover:-translate-y-2 card">
-                <div
-                    class="flex items-center justify-center w-14 h-14 <?php echo htmlspecialchars($card['bg_color']); ?> rounded-full mb-4">
-                    <?php if (!empty($card['icon'])): ?>
-                    <i
-                        class="<?php echo htmlspecialchars($card['icon']); ?> <?php echo htmlspecialchars($card['text_color']); ?> text-2xl"></i>
-                    <?php endif ?>
-                </div>
-                <h2 class="text-xl font-semibold mb-4 text-gray-800"><?php echo htmlspecialchars($card['title']); ?>
-                </h2>
-                <p class="text-gray-600 mb-6"><?php echo htmlspecialchars($card['description']); ?></p>
-                <a href="<?php echo htmlspecialchars($card['link']); ?>"
-                    class="inline-block <?php echo htmlspecialchars($card['bg_color']); ?> text-white px-6 py-2 rounded-lg hover:<?php echo htmlspecialchars($card['bg_color']); ?> transition-colors duration-300"><?php echo htmlspecialchars($card['title_link']); ?></a>
+            <div id="session-message" data-type="<?= htmlspecialchars($_SESSION['message']['type']) ?>" class="hidden">
+                <?= htmlspecialchars($_SESSION['message']['text']) ?>
             </div>
-            <?php endforeach; ?>
+            <?php unset($_SESSION['message']); ?>
+        <?php endif; ?>
+    </div>
+
+
+    <div class="container mx-auto py-16 px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Portail des Réclamations</h1>
+                <p class="text-md text-gray-600">Un espace dédié pour soumettre et suivre vos demandes.</p>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                <div class="divide-y divide-gray-200">
+                    
+                    <?php foreach ($cardReclamation as $card): ?>
+                    <div class="p-8 hover:bg-gray-50 transition-colors duration-200">
+                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mr-5">
+                                    <?php if (!empty($card['icon'])): ?>
+                                        <i class="<?php echo htmlspecialchars($card['icon']); ?> text-xl"></i>
+                                    <?php endif ?>
+                                </div>
+                                <div>
+                                    <h2 class="text-lg font-bold text-gray-900"><?php echo htmlspecialchars($card['title']); ?></h2>
+                                    <p class="text-gray-600 mt-1"><?php echo htmlspecialchars($card['description']); ?></p>
+                                </div>
+                            </div>
+
+                            <div class="mt-5 md:mt-0 md:ml-6 flex-shrink-0">
+                                <a href="<?php echo htmlspecialchars($card['link']); ?>" class="inline-block w-full text-center md:w-auto bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-md hover:bg-blue-700 transition-colors duration-300">
+                                    <?php echo htmlspecialchars($card['title_link']); ?>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-
-        // Animation au survol des cartes
-        const cards = document.querySelectorAll('.card');
-        cards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                gsap.to(card, {
-                    scale: 1.05,
-                    duration: 0.1
-                });
-            });
-
-            card.addEventListener('mouseleave', () => {
-                gsap.to(card, {
-                    scale: 1,
-                    duration: 0.1
-                });
-            });
-        });
+        const sessionMessageDiv = document.getElementById('session-message');
+        if (sessionMessageDiv) {
+            const message = sessionMessageDiv.textContent;
+            const type = sessionMessageDiv.dataset.type;
+            showNotification(type, message);
+        }
     });
+
+    function showNotification(type, message) {
+        const container = document.getElementById('notification-container');
+        if (!container) return;
+
+        const notif = document.createElement('div');
+        notif.className = `p-4 rounded-lg shadow-lg text-sm mb-3 border-l-4 ${type === 'success' ? 'bg-green-100 border-green-500 text-green-800' : 'bg-red-100 border-red-500 text-red-800'}`;
+        
+        const title = type === 'success' ? 'Succès !' : 'Erreur !';
+        notif.innerHTML = `<strong class="font-bold">${title}</strong> <span>${message}</span>`;
+        
+        notif.style.opacity = 0;
+        notif.style.transition = 'opacity 0.5s ease-in-out';
+        
+        container.appendChild(notif);
+        
+        // Fade in
+        setTimeout(() => {
+            notif.style.opacity = 1;
+        }, 10);
+        
+        // Fade out and remove
+        setTimeout(() => {
+            notif.style.opacity = 0;
+            setTimeout(() => {
+                notif.remove();
+            }, 500);
+        }, 5000);
+    }
     </script>
 </body>
-
 </html>
