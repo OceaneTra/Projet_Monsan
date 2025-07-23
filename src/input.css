@@ -1,39 +1,39 @@
 @import "tailwindcss";
 
 .bg-primary {
-    background-color: #157A6E;
+    background-color: #3457cb;
 }
 
 .bg-primary-dark {
-    background-color: #0B3C32;
+    background-color: #24407a;
 }
 
 .bg-secondary {
-    background-color: #2F53CD;
+    background-color: #36865a;
 }
 
 .bg-secondary-light {
-    background-color: #60A5FA;
+    background-color: #59bf3d;
 }
 
 .bg-accent {
-    background-color: #F6C700;
+    background-color: #59bf3d;
 }
 
 .text-primary {
-    color: #157A6E;
+    color: #3457cb;
 }
 
 .text-secondary {
-    color: #2F53CD;
+    color: #36865a;
 }
 
 .text-accent {
-    color: #F6C700;
+    color: #59bf3d;
 }
 
 .hover\:bg-primary-dark:hover {
-    background-color: #0B3C32;
+    background-color: #24407a;
 }
 
 
