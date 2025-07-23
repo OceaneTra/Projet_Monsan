@@ -715,7 +715,7 @@ CREATE TABLE `messages` (
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Données de la table `messages`
-INSERT INTO `messages` VALUES ('3', 'Bienvenue sur Soutenance Manager', 'message_bienvenue', 'info');
+INSERT INTO `messages` VALUES ('3', 'Bienvenue sur Univalid', 'message_bienvenue', 'info');
 INSERT INTO `messages` VALUES ('4', 'Erreur lors du traitement du fichier', 'messageErreur', 'error');
 
 
