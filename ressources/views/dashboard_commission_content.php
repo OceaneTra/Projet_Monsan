@@ -139,46 +139,67 @@ foreach ($repartitionData as $data) {
         <!-- Main content area -->
         <div class="flex-1 overflow-y-auto bg-gray-50">
             <div class="max-w-7xl mx-auto p-6">
-                <!-- HEADER HERO -->
-                <div class="relative bg-gradient-to-r from-green-400 via-green-200 to-blue-200 py-12 mb-10 rounded-b-3xl shadow-lg">
-                    <div class="container mx-auto flex flex-col items-center justify-center">
-                        <div class="flex items-center gap-4 mb-4">
-                            <span class="inline-flex items-center justify-center bg-white/80 rounded-full p-4 shadow-lg">
-                                <i class="fas fa-users text-green-600 text-4xl"></i>
-                            </span>
-                            <h1 class="text-4xl md:text-5xl font-extrabold text-green-800 tracking-wide drop-shadow-lg">Dashboard Commission</h1>
+
+                <div class="header bg-white rounded-3xl p-8 lg:p-12 mb-8 shadow-xl relative overflow-hidden">
+                    <div class="flex items-center gap-6 md:gap-8 flex-col md:flex-row text-center md:text-left">
+                        <div class="header-icon bg-gradient-to-br from-primary to-primary-dark text-white w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center text-4xl md:text-5xl shadow-lg">
+                            <i class="fas fa-clipboard-check"></i>
                         </div>
-                        <p class="text-lg text-green-900/80 font-medium">Vue d'ensemble et suivi des rapports de soutenance</p>
+                        <div class="header-text">
+                            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-2 tracking-tight">Tableau de bord Commission</h1>
+                            <p class="text-lg text-gray-600 font-normal">Vue d'ensemble et suivi des rapports de soutenance</p>
+                        </div>
                     </div>
                 </div>
+
 
                 <!-- STAT CARDS -->
-                <div class="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 -mt-16 mb-12 px-2">
-                    <div class="bg-gradient-to-br from-blue-100 to-blue-300 rounded-2xl shadow-xl p-8 flex flex-col items-center hover:scale-105 transition-transform">
-                        <i class="fas fa-file-alt text-4xl text-blue-600 mb-2"></i>
-                        <div class="text-3xl font-bold text-blue-800"><?php echo $totalRapports; ?></div>
-                        <div class="text-blue-700 mt-1">Rapports total</div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card bg-white rounded-2xl p-6 shadow-md transition-all duration-300 hover:translate-y-[-4px] hover:shadow-lg relative overflow-hidden" style="animation-delay: 0.1s">
+                        <div class="stat-content flex items-center gap-4">
+                            <div class="stat-icon bg-primary/10 text-primary w-12 h-12 rounded-xl flex items-center justify-center text-2xl">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 class="text-4xl font-bold text-primary mb-1">12</h3>
+                                <p class="text-sm font-medium text-gray-600">Rapports total</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-gradient-to-br from-green-100 to-green-300 rounded-2xl shadow-xl p-8 flex flex-col items-center hover:scale-105 transition-transform">
-                        <i class="fas fa-check-circle text-4xl text-green-600 mb-2"></i>
-                        <div class="text-3xl font-bold text-green-800"><?php echo $tauxValidation; ?>%</div>
-                        <div class="text-green-700 mt-1">Taux de validation</div>
+                    <div class="stat-card bg-white rounded-2xl p-6 shadow-md transition-all duration-300 hover:translate-y-[-4px] hover:shadow-lg relative overflow-hidden" style="animation-delay: 0.2s">
+                        <div class="stat-content flex items-center gap-4">
+                            <div class="stat-icon bg-secondary/10 text-secondary w-12 h-12 rounded-xl flex items-center justify-center text-2xl">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 class="text-4xl font-bold text-secondary mb-1">75%</h3>
+                                <p class="text-sm font-medium text-gray-600">Taux de validation</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-gradient-to-br from-yellow-100 to-yellow-300 rounded-2xl shadow-xl p-8 flex flex-col items-center hover:scale-105 transition-transform">
-                        <i class="fas fa-clock text-4xl text-yellow-600 mb-2"></i>
-                        <div class="text-3xl font-bold text-yellow-800"><?php echo $tempsMoyen; ?> j</div>
-                        <div class="text-yellow-700 mt-1">Temps moyen</div>
+                    <div class="stat-card bg-white rounded-2xl p-6 shadow-md transition-all duration-300 hover:translate-y-[-4px] hover:shadow-lg relative overflow-hidden" style="animation-delay: 0.3s">
+                        <div class="stat-content flex items-center gap-4">
+                            <div class="stat-icon bg-warning/10 text-warning w-12 h-12 rounded-xl flex items-center justify-center text-2xl">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 class="text-4xl font-bold text-warning mb-1">3.2j</h3>
+                                <p class="text-sm font-medium text-gray-600">Temps moyen</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-gradient-to-br from-red-100 to-red-300 rounded-2xl shadow-xl p-8 flex flex-col items-center hover:scale-105 transition-transform">
-                        <i class="fas fa-hourglass-half text-4xl text-red-600 mb-2"></i>
-                        <div class="text-3xl font-bold text-red-800"><?php echo $enAttente; ?></div>
-                        <div class="text-red-700 mt-1">En attente</div>
+                    <div class="stat-card bg-white rounded-2xl p-6 shadow-md transition-all duration-300 hover:translate-y-[-4px] hover:shadow-lg relative overflow-hidden" style="animation-delay: 0.4s">
+                        <div class="stat-content flex items-center gap-4">
+                            <div class="stat-icon bg-danger/10 text-danger w-12 h-12 rounded-xl flex items-center justify-center text-2xl">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 class="text-4xl font-bold text-danger mb-1">3</h3>
+                                <p class="text-sm font-medium text-gray-600">En attente</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-
-
-
             </div>
 
             <!-- Charts Row -->

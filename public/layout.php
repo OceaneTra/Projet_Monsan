@@ -13,22 +13,17 @@ include 'menu.php';
 include __DIR__ . '/../ressources/routes/gestionUtilisateurRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionRhRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionDashboardRoutes.php';
-include __DIR__ . '/../ressources/routes/dashboardEnseignantRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionScolariteRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionNotesRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionCandidaturesRoutes.php';
-include __DIR__ . '/../ressources/routes/listeEtudiantsRoutes.php';
-include __DIR__ . '/../ressources/routes/dossierAcademiqueRoutes.php';
+
 include __DIR__ . '/../ressources/routes/verificationRapportsRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionReclamationsScolariteRoutes.php';
 include __DIR__ . '/../ressources/routes/evaluationDossiersRoutes.php';
 include __DIR__ . '/../ressources/routes/gestionDossiersCandidaturesRoutes.php';
 include __DIR__ . '/../ressources/routes/sauvegardeRestaurationRoutes.php';
 include __DIR__ . '/../ressources/routes/notesResultatsRoutes.php';
-// include __DIR__ . '/../ressources/routes/archivesDossiersSoutenanceRoutes.php';
-// include __DIR__ . '/../ressources/routes/auditRoutes.php';
-// include __DIR__ . '/../ressources/routes/redactionCompteRenduRoutes.php';
-// include __DIR__ . '/../ressources/routes/archivesCompteRenduRoutes.php';
+
 
 // Si l'utilisateur n'est pas connecté, rediriger vers la page de login
 if (!isset($_SESSION['id_utilisateur'])) {
@@ -597,30 +592,7 @@ if (!isset($_SESSION['id_utilisateur'])) {
             </div>
         </div>
 
-        <!-- Static sidebar for desktop -->
-        <div class="hidden md:flex md:flex-shrink-0">
-            <div class="flex flex-col w-64">
-                <div class="flex items-center justify-center h-20 px-4 bg-white border-r">
-                    <img src="./images/logo.png" height="130px" width="130px" alt="Logo">
-                </div>
-                <div class="flex flex-col flex-grow border-r border-gray-200 pt-5 pb-4 bg-white overflow-y-auto">
-                    <div class="flex-grow px-4">
-                        <nav class="space-y-2">
-                            <?php echo $menuHTML; ?>
-                        </nav>
-                    </div>
-                    <div class="flex-shrink-0 px-4">
-                        <form action="logout.php" method="POST" id="logoutFormDesktop" class="w-full">
-                            <button type="submit" form="logoutFormDesktop"
-                                class="w-full flex items-center px-2 py-3 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 group">
-                                <i class="fas fa-power-off mr-3 text-gray-400 group-hover:text-gray-500"></i>
-                                Déconnexion
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+       
 
         <!-- Main content -->
         <div class="flex flex-col flex-1 w-0 overflow-hidden">
