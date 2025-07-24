@@ -304,55 +304,209 @@ class GestionUtilisateurController
             <meta charset="UTF-8">
             <title>Bienvenue</title>
             <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background-color: #10b981; color: white; padding: 20px; text-align: center; }
-                .content { padding: 20px; background-color: #f9fafb; }
-                .footer { margin-top: 20px; padding: 10px; text-align: center; font-size: 12px; color: #6b7280; }
-                .button {
-                    display: inline-block; padding: 10px 20px; background-color: #10b981; 
-                    color: white; text-decoration: none; border-radius: 5px; margin: 15px 0;
+                body { 
+                    font-family: "Inter", Arial, sans-serif; 
+                    line-height: 1.6; 
+                    color: #1f2937; 
+                    margin: 0; 
+                    padding: 0; 
+                    background-color: #f8fafc;
                 }
-                .credentials { background-color: #e5e7eb; padding: 15px; border-radius: 5px; margin: 15px 0; }
+                .container { 
+                    max-width: 600px; 
+                    margin: 0 auto; 
+                    background-color: #ffffff;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+                }
+                .header { 
+                    background: linear-gradient(135deg, #24407a 0%, #3457cb 100%);
+                    color: white; 
+                    padding: 30px 20px; 
+                    text-align: center; 
+                }
+                .header h1 {
+                    margin: 0;
+                    font-size: 24px;
+                    font-weight: 700;
+                }
+                .logo-section {
+                    background-color: #ffffff;
+                    padding: 20px;
+                    text-align: center;
+                    border-bottom: 3px solid #36865a;
+                }
+                .content { 
+                    padding: 30px 20px; 
+                    background-color: #ffffff; 
+                }
+                .footer { 
+                    margin-top: 20px; 
+                    padding: 20px; 
+                    text-align: center; 
+                    font-size: 12px; 
+                    color: #6b7280; 
+                    background-color: #f8fafc;
+                    border-top: 1px solid #e5e7eb;
+                }
+                .button {
+                    display: inline-block; 
+                    padding: 12px 24px; 
+                    background: linear-gradient(135deg, #36865a 0%, #59bf3d 100%);
+                    color: white; 
+                    text-decoration: none; 
+                    border-radius: 8px; 
+                    margin: 20px 0;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                }
+                .button:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(54, 134, 90, 0.3);
+                }
+                .credentials { 
+                    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+                    padding: 20px; 
+                    border-radius: 8px; 
+                    margin: 20px 0; 
+                    border-left: 4px solid #F6C700;
+                }
+                .credentials h3 {
+                    color: #24407a;
+                    margin-top: 0;
+                    margin-bottom: 15px;
+                    font-size: 18px;
+                    font-weight: 600;
+                }
+                .credential-item {
+                    margin-bottom: 10px;
+                    padding: 8px 0;
+                }
+                .credential-label {
+                    font-weight: 600;
+                    color: #24407a;
+                }
+                .credential-value {
+                    color: #4b5563;
+                    font-family: "Courier New", monospace;
+                    background-color: #ffffff;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    border: 1px solid #d1d5db;
+                    display: inline-block;
+                    margin-left: 8px;
+                }
+                .warning-box {
+                    background-color: #fef3c7;
+                    border: 1px solid #F6C700;
+                    border-radius: 6px;
+                    padding: 15px;
+                    margin: 15px 0;
+                }
+                .warning-text {
+                    color: #92400e;
+                    font-size: 14px;
+                    margin: 0;
+                }
+                .platform-name {
+                    color: #24407a;
+                    font-weight: 700;
+                }
+                .welcome-text {
+                    font-size: 16px;
+                    color: #374151;
+                    margin-bottom: 20px;
+                }
             </style>
         </head>
         <body>
             <div class="container">
+                <div class="logo-section">
+                    <h2 style="color: #24407a; margin: 0; font-size: 28px; font-weight: 800;">
+                        <span style="color: #36865a;">Uni</span><span style="color: #24407a;">Valid</span>
+                    </h2>
+                    <p style="color: #6b7280; margin: 5px 0 0 0; font-size: 14px;">Plateforme de Gestion de Soutenance</p>
+                </div>
+                
                 <div class="header">
-                    <h1> '.htmlspecialchars($sujet).'</h1>
+                    <h1>🎉 Bienvenue dans votre espace !</h1>
                 </div>
                 
                 <div class="content">
-                    <p>Bonjour ' . htmlspecialchars($nom) . ',</p>
-                    <p>Votre compte a été créé avec succès sur notre plateforme.</p>
+                    <p class="welcome-text">Bonjour <strong style="color: #24407a;">' . htmlspecialchars($nom) . '</strong>,</p>
+                    
+                    <p class="welcome-text">
+                        Félicitations ! Votre compte a été créé avec succès sur la plateforme 
+                        <span class="platform-name">UniValid</span>. Vous pouvez maintenant accéder à tous les services 
+                        de gestion de soutenance.
+                    </p>
                     
                     <div class="credentials">
-                        <p><strong>Identifiant de connexion:</strong> ' . htmlspecialchars($login) . '</p>';
+                        <h3>🔐 Vos identifiants de connexion</h3>
+                        <div class="credential-item">
+                            <span class="credential-label">📧 Email/Login :</span>
+                            <span class="credential-value">' . htmlspecialchars($login) . '</span>
+                        </div>';
         
-                      // Ajout du mot de passe temporaire si fourni
-                   if ($motDePasse) {
-                $message .= '<p><strong>Mot de passe temporaire:</strong> ' . htmlspecialchars($motDePasse) . '</p>
-                        <p style="color: #ef4444; font-size: 0.9em;">
-                            Pour des raisons de sécurité, nous vous recommandons de changer ce mot de passe après votre première connexion.
-                        </p>';
-                      }
+        // Ajout du mot de passe temporaire si fourni
+        if ($motDePasse) {
+            $message .= '
+                        <div class="credential-item">
+                            <span class="credential-label">🔑 Mot de passe temporaire :</span>
+                            <span class="credential-value">' . htmlspecialchars($motDePasse) . '</span>
+                        </div>';
+        }
         
-                $message .= '
+        $message .= '
+                    </div>';
+        
+        if ($motDePasse) {
+            $message .= '
+                    <div class="warning-box">
+                        <p class="warning-text">
+                            ⚠️ <strong>Important :</strong> Pour votre sécurité, nous vous recommandons fortement 
+                            de modifier ce mot de passe temporaire lors de votre première connexion.
+                        </p>
+                    </div>';
+        }
+        
+        $message .= '
+                    <div style="text-align: center; margin: 30px 0;">
+                        <p style="margin-bottom: 15px; color: #374151;">Prêt à commencer ? Connectez-vous dès maintenant :</p>
+                        <a href="http://localhost:8080/page_connexion.php" class="button" style="color: #ffffff; text-decoration: none;">
+                            🚀 Accéder à mon compte
+                        </a>
                     </div>
                     
-                    <p>Vous pouvez dès maintenant vous connecter à votre compte :</p>
-                    <a href="http://localhost:8080/page_connexion.php" class="button " style="color:#fff">Se connecter</a>
+                    <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; border-left: 4px solid #3457cb; margin: 20px 0;">
+                        <h4 style="color: #24407a; margin-top: 0; margin-bottom: 10px;">📋 Que pouvez-vous faire sur UniValid ?</h4>
+                        <ul style="color: #4b5563; margin: 0; padding-left: 20px;">
+                            <li>Gérer vos candidatures de soutenance</li>
+                            <li>Suivre l\'avancement de vos dossiers</li>
+                            <li>Consulter les rapports et évaluations</li>
+                            <li>Communiquer avec l\'équipe administrative</li>
+                        </ul>
+                    </div>
                     
-                    <p>Si vous n\'êtes pas à l\'origine de cette création de compte, veuillez ignorer cet email ou contacter notre support.</p>
+                    <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+                        Si vous n\'êtes pas à l\'origine de cette création de compte ou si vous rencontrez des difficultés, 
+                        n\'hésitez pas à contacter notre équipe support à 
+                        <a href="mailto:managersoutenance@gmail.com" style="color: #36865a; text-decoration: none;">managersoutenance@gmail.com</a>
+                    </p>
                 </div>
                 
                 <div class="footer">
-                    <p>© ' . date('Y') . ' Univalid. Tous droits réservés.</p>
+                    <p style="margin: 0 0 10px 0;">
+                        © ' . date('Y') . ' <span style="color: #24407a; font-weight: 600;">UniValid</span> - Tous droits réservés
+                    </p>
+                    <p style="margin: 0; font-size: 11px;">
+                        Plateforme de Gestion de Soutenance | Université Félix Houphouët-Boigny
+                    </p>
                 </div>
             </div>
         </body>
         </html>';
-
 
         return $message;
     }
