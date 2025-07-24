@@ -492,7 +492,7 @@ class GestionUtilisateurController
                     <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
                         Si vous n\'êtes pas à l\'origine de cette création de compte ou si vous rencontrez des difficultés, 
                         n\'hésitez pas à contacter notre équipe support à 
-                        <a href="mailto:managersoutenance@gmail.com" style="color: #36865a; text-decoration: none;">managersoutenance@gmail.com</a>
+                        <a href="mailto:univalid24@gmail.com" style="color: #36865a; text-decoration: none;">univalid24@gmail.com</a>
                     </p>
                 </div>
                 
@@ -526,16 +526,16 @@ class GestionUtilisateurController
             $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
-            $mail->Username = 'managersoutenance@gmail.com';
-            $mail->Password = 'iweglnpanhpkoqfe';
+            $mail->Username = 'univalid25@gmail.com';
+            $mail->Password = 'yuwgnzuqtmbwyrbv';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
             $mail->CharSet = 'UTF-8';
 
             // Destinataires
-            $mail->setFrom('managersoutenance@gmail.com', 'Soutenance Manager'); // Utiliser une adresse email valide
+            $mail->setFrom('univalid25@gmail.com', 'Univalid'); // Utiliser une adresse email valide
             $mail->addAddress($email, $nom);
-            $mail->addReplyTo('managersoutenance@gmail.com', 'Support technique');
+            $mail->addReplyTo('univalid25@gmail.com', 'Support technique');
 
             // Contenu
             $mail->isHTML(true);
